@@ -1,8 +1,6 @@
 <template>
 	<div class="pano-btns-container">
-		<el-button @click="isAddMarker = !isAddMarker">{{
-			isAddMarker ? "完成" : "设置/添加"
-		}}</el-button>
+		<el-button @click="changeIsAddMarker">{{ isAddMarker ? "完成" : "设置/添加" }}</el-button>
 	</div>
 	<el-image
 		id="preview_img_list"
@@ -69,7 +67,7 @@ import "@photo-sphere-viewer/markers-plugin/index.css";
 import "@photo-sphere-viewer/gallery-plugin/index.css";
 import arrow from "../static/icon/arrow.gif";
 import { useCool } from "/@/cool";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElNotification } from "element-plus";
 
 const { service, route, router } = useCool();
 
@@ -122,6 +120,8 @@ onMounted(async () => {
 	handleGalleryChange();
 });
 
+const origin = window.location.origin;
+
 const initPano = async () => {
 	try {
 		const promise = [];
@@ -154,10 +154,8 @@ const initPano = async () => {
 		);
 		await Promise.all(promise);
 		panoramaUrl.value =
-			panoInfo.value?.panoSrc.replace(
-				"http://127.0.0.1:8001/",
-				"http://192.168.101.30:9000/dev/"
-			) ?? defaultUrl;
+			panoInfo.value?.panoSrc.replace(import.meta.env.VITE_APP_DOMAIN, origin + "/dev/") ??
+			defaultUrl;
 		console.log(panoramaUrl.value, panoId.value);
 	} catch (e) {
 		console.log(e);
@@ -337,6 +335,16 @@ function handleGalleryActive() {
 
 // 状态
 const isAddMarker = ref(false); // 是否可添加marker
+const changeIsAddMarker = () => {
+	isAddMarker.value = !isAddMarker.value;
+	if (isAddMarker.value) {
+		ElNotification({
+			title: "提示",
+			message: "点击页面添加箭头，按住alt键连续点击添加图形",
+			position: "bottom-right"
+		});
+	}
+};
 const isAddMarkerFormOpen = ref(false); // 单个标记添加dialog
 const addPosition = ref({ yaw: 0, pitch: 0 }); // 单标位置
 
