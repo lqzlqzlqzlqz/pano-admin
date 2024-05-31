@@ -125,6 +125,7 @@ const origin = window.location.origin;
 const initPano = async () => {
 	try {
 		const promise = [];
+		currentMarkers.value = [];
 		promise.push(
 			service.panos.panos.info({ id: panoId.value }).then((res) => (panoInfo.value = res))
 		);
@@ -153,9 +154,7 @@ const initPano = async () => {
 			})
 		);
 		await Promise.all(promise);
-		panoramaUrl.value =
-			panoInfo.value?.panoSrc.replace(import.meta.env.VITE_APP_DOMAIN, origin + "/dev/") ??
-			defaultUrl;
+		panoramaUrl.value = panoInfo.value?.panoSrc ?? defaultUrl;
 		console.log(panoramaUrl.value, panoId.value);
 	} catch (e) {
 		console.log(e);
@@ -380,6 +379,16 @@ onMounted(() => {
 		if (!event.altKey) {
 			isAltPressed.value = false;
 			if (altMarkerId.value === "") return;
+			console.log(1);
+			const markerConfig = markersPlugin.value.getMarker(altMarkerId.value);
+			console.log(markerConfig.config.polyline);
+			if (markerConfig.config.polyline.length < 5) {
+				ElMessage.error("请选择至少三个点");
+				markersPlugin.value.removeMarker(altMarkerId.value);
+				altMarkerId.value = "";
+				return;
+			}
+			console.log(3);
 			isAddMarkerFormOpen.value = true; // Open the form to add a graphical marker
 			console.log(markersPlugin.value.getMarker(altMarkerId.value));
 		}
@@ -533,7 +542,7 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 			newMarker = {
 				id: `marker_${Date.now()}`,
 				position: addPosition.value,
-				html: `<img src='${arrow}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
+				html: `<img src='http://qiniu-misc.hua10.com/1717154078197-9ff50574b17240db8de946ad02635fe6_arrow.gif' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
 				anchor: "bottom center",
 				size: { width: 50, height: 50 },
 				tooltip: {

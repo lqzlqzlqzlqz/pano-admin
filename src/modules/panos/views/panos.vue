@@ -19,7 +19,9 @@
 					<el-button @click="toPano(scope)">查看</el-button>
 				</template>
 				<template #column-position="{ scope }">
-					<el-button @click="viewMapPosition(scope)">查看</el-button>
+					<el-button @click="viewMapPosition(scope)" :disabled="!scope.row.position"
+						>查看</el-button
+					>
 				</template>
 			</cl-table>
 		</cl-row>
@@ -109,8 +111,9 @@
 import { useCrud, useTable, useUpsert } from "@cool-vue/crud";
 import { useCool } from "/@/cool";
 import { ref } from "vue";
-const { service, router } = useCool();
+const { service, router, route } = useCool();
 
+const projectId = ref(route.query?.project_id || null);
 const projectsList = ref<any>([]);
 // 设置全景图在地图中的位置路由
 const findMapSrc = (id: number) => {
@@ -278,7 +281,9 @@ const Crud = useCrud(
 		service: service.panos?.panos
 	},
 	(app) => {
-		app.refresh();
+		app.refresh({
+			projectId: projectId.value ? projectId.value : undefined
+		});
 	}
 );
 </script>
