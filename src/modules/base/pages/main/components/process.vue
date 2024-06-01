@@ -7,9 +7,9 @@
 			<li class="item" @click="toRefresh">
 				<i class="cl-iconfont cl-icon-refresh"></i>
 			</li>
-			<li class="item" @click="toHome">
+			<!-- <li class="item" @click="toHome">
 				<i class="cl-iconfont cl-icon-home"></i>
-			</li>
+			</li> -->
 		</ul>
 
 		<div class="app-process__container">

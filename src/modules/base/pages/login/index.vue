@@ -8,7 +8,7 @@
 				</div>
 			</div>
 
-			<p class="desc">快速开发后台权限管理系统</p>
+			<p class="desc"></p>
 
 			<div class="form">
 				<el-form label-position="top" class="form" :disabled="saving">
@@ -124,7 +124,7 @@ async function toLogin() {
 		storage.set("username", form.username);
 
 		// 跳转首页
-		router.push("/");
+		router.push("/project/project");
 	} catch (err: any) {
 		// 刷新验证码
 		refs.picCaptcha.refresh();
