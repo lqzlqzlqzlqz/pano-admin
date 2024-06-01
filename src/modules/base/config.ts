@@ -65,6 +65,13 @@ export default (): ModuleConfig => {
 					process: false
 				},
 				component: () => import("./pages/test/index.vue")
+			},
+			{
+				path: "/pano",
+				meta: {
+					process: false
+				},
+				component: () => import("./pages/pano/index.vue")
 			}
 		],
 		install(app) {

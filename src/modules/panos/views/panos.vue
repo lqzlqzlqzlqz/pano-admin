@@ -23,6 +23,16 @@
 						>查看</el-button
 					>
 				</template>
+				<template #column-url="{ scope }">
+					<div>
+						<el-link
+							:href="`${origin}/pano?pano_id=${scope.row.id}&project_id=${scope.row.projectId}`"
+							>{{
+								`${origin}/pano?pano_id=${scope.row.id}&project_id=${scope.row.projectId}`
+							}}</el-link
+						>
+					</div>
+				</template>
 			</cl-table>
 		</cl-row>
 
@@ -232,7 +242,7 @@ const Upsert = useUpsert({
 		);
 	}
 });
-
+const origin = window.location.origin;
 // cl-table
 const Table = useTable({
 	columns: [
@@ -256,18 +266,20 @@ const Table = useTable({
 			minWidth: 100,
 			component: { name: "cl-image", props: { size: 60 } }
 		},
-		{ label: "路由", prop: "route", minWidth: 140 },
+		// { label: "路由", prop: "route", minWidth: 140 },
+		{
+			label: "链接",
+			prop: "url",
+			minWidth: 180,
+			showOverflowTooltip: true,
+			formatter: (row, column) =>
+				`${origin}/pano?pano_id=${row.id}&project_id=${row.projectId}`
+		},
 		{ label: "描述", prop: "description", showOverflowTooltip: true, minWidth: 200 },
 		{ label: "背景音乐地址", prop: "music", minWidth: 120, component: { name: "cl-link" } },
 		{
 			label: "创建时间",
 			prop: "createTime",
-			minWidth: 160,
-			component: { name: "cl-date-text" }
-		},
-		{
-			label: "更新时间",
-			prop: "updateTime",
 			minWidth: 160,
 			component: { name: "cl-date-text" }
 		},
