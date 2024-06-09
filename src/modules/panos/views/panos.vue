@@ -272,6 +272,7 @@ const Table = useTable({
 			prop: "url",
 			minWidth: 180,
 			showOverflowTooltip: true,
+
 			formatter: (row, column) =>
 				`${origin}/pano?pano_id=${row.id}&project_id=${row.projectId}`
 		},

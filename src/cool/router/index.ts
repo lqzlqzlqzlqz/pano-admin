@@ -17,6 +17,7 @@ const routes: RouteRecordRaw[] = [
 	{
 		path: "/",
 		name: "index",
+		redirect: "/project/project",
 		component: () => import("/$/base/pages/main/index.vue"),
 		children: []
 	},
@@ -111,6 +112,7 @@ router.clear = function () {
 router.find = function (path: string) {
 	return router.getRoutes().find((e) => {
 		if (path == "/") {
+			console.log("PATH TRUE");
 			return e.path == path && e.name != "index";
 		} else {
 			return e.path == path;
