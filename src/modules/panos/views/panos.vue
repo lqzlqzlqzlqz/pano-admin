@@ -180,6 +180,9 @@ const toPano = (scope: any) => {
 
 // cl-upsert
 const Upsert = useUpsert({
+	props: {
+		labelWidth: "200px"
+	},
 	items: [
 		{
 			label: "标题",
@@ -210,13 +213,13 @@ const Upsert = useUpsert({
 			prop: "position",
 			component: { name: "slot-change-map-position" }
 		},
-		{ label: "缩略图", prop: "thumb", component: { name: "cl-upload" }, required: true },
 		{
-			label: "路由",
-			prop: "route",
-			component: { name: "el-input", props: { clearable: true } },
+			label: "缩略图[200x200]",
+			prop: "thumb",
+			component: { name: "cl-upload" },
 			required: true
 		},
+
 		{
 			label: "描述",
 			prop: "description",

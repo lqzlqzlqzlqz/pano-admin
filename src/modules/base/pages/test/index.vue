@@ -40,7 +40,7 @@ import { AutorotatePlugin } from "@photo-sphere-viewer/autorotate-plugin";
 import "@photo-sphere-viewer/core/index.css";
 import "@photo-sphere-viewer/markers-plugin/index.css";
 import "@photo-sphere-viewer/gallery-plugin/index.css";
-import arrow from "../../../panos/static/icon/arrow.gif";
+import arrow from "../../../panos/static/icon/arrow1.gif";
 import { useCool } from "/@/cool";
 import { ElMessage } from "element-plus";
 

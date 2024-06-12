@@ -14,10 +14,17 @@
 		fit="cover"
 	/>
 	<div id="viewer"></div>
+	<el-dialog v-model="isVideoPreviewOpen">
+		<video
+			style="width: 100%; height: 100%; min-height: 100px; min-width: 200px"
+			controls
+			:src="imageList[0]"
+		/>
+	</el-dialog>
 	<el-dialog
 		:before-close="handleClose"
 		v-model="isAddMarkerFormOpen"
-		:title="selectedMarker.id ? '修改' : '添加'"
+		:title="selectedMarker.id ? '修改热点' : '添加热点'"
 		width="500"
 		center
 	>
@@ -27,10 +34,10 @@
 			</el-form-item>
 			<el-form-item
 				v-if="altMarkerId || selectedMarker.mt === 'graph'"
-				label="配图"
+				label="配图/视频"
 				prop="pop"
 			>
-				<cl-upload v-model="addMarkerFormData.pop" multiple />
+				<cl-upload type="file" v-model="addMarkerFormData.pop" multiple />
 			</el-form-item>
 			<el-form-item v-else label="跳转" prop="to">
 				<!-- <el-input v-model="addMarkerFormData.to" /> -->
@@ -104,6 +111,7 @@ const projectId = ref("");
 const panosNavigateOps = ref([]);
 
 const isImagePreviewOpen = ref(false);
+const isVideoPreviewOpen = ref(false);
 const imageList = ref<string[]>([]);
 
 // 初始 获取pano_id，panoInfo，
@@ -246,9 +254,13 @@ function initViewer() {
 					});
 				} else if (e.marker.config.mt === "graph") {
 					imageList.value = e.marker.config.pop;
-					nextTick(() => {
-						document.querySelector("#preview_img_list")?.click();
-					});
+					if (imageList.value.length && imageList.value[0].includes(".mp4")) {
+						isVideoPreviewOpen.value = true;
+					} else {
+						nextTick(() => {
+							document.querySelector("#preview_img_list")?.click();
+						});
+					}
 				}
 			}
 		}
@@ -353,8 +365,8 @@ const rules = ref({
 	tooltip: [{ required: true, message: "请输入提示", trigger: "change" }],
 	to: [{ required: true, message: "请选择跳转位置", trigger: "change" }],
 	pop: [
-		{ required: true, message: "请上传配图", trigger: "change" },
-		{ type: "array", message: "配图必须是一个数组", trigger: "change" }
+		{ required: true, message: "请上传配图/视频", trigger: "change" },
+		{ type: "array", message: "配图/视频必须是一个数组", trigger: "change" }
 	]
 });
 const addMarkerFormData = ref({
@@ -542,7 +554,7 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 			newMarker = {
 				id: `marker_${Date.now()}`,
 				position: addPosition.value,
-				html: `<img src='http://qiniu-misc.hua10.com/1717154078197-9ff50574b17240db8de946ad02635fe6_arrow.gif' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
+				html: `<img src='http://qiniu-misc.hua10.com/1718070179654-dc4f0356995041418a2e582ac483f8af_arrow1.gif' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
 				anchor: "bottom center",
 				size: { width: 50, height: 50 },
 				tooltip: {
@@ -617,6 +629,7 @@ const handleRemoveMarker = async () => {
 	width: 100%;
 	height: 100%;
 }
+
 .pano-btns-container {
 	position: absolute;
 	right: 10px;
@@ -661,7 +674,9 @@ const handleRemoveMarker = async () => {
 	object-fit: contain;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	transition:
+		transform 0.3s ease,
+		box-shadow 0.3s ease;
 }
 
 .preview-image:hover {
