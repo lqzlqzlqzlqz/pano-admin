@@ -207,6 +207,16 @@ function initViewer() {
 		caption: panoInfo.value?.title ?? "",
 		touchmoveTwoFingers: true,
 		mousewheelCtrlKey: false,
+		lang: {
+			zoom: "缩放",
+			move: "移动",
+			download: "下载",
+			fullscreen: "全屏",
+			autorotate: "自动旋转",
+			markers: "标记",
+			gallery: "图库",
+			twoFingers: "请用双指拖动",
+		},
 		navbar: [
 			"autorotate",
 			"zoom",
@@ -229,7 +239,7 @@ function initViewer() {
 			"fullscreen"
 		],
 		plugins: [
-			[GalleryPlugin, { visibleOnLoad: true, hideOnClick: false }],
+			[GalleryPlugin, { visibleOnLoad: false, hideOnClick: false }],
 			[AutorotatePlugin, { autostartDelay: null, autorotateSpeed: "1rpm" }],
 			[MarkersPlugin, { markers: [] }]
 		]

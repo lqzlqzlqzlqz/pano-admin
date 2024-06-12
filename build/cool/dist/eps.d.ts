@@ -1,4 +1,18 @@
 declare namespace Eps {
+	interface AppComplainEntity {
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
+	interface AppFeedbackEntity {
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
 	interface BaseSysDepartmentEntity {
 		/**
 		 * ID
@@ -924,6 +938,41 @@ declare namespace Eps {
 		[key: string]: any;
 	}
 
+	interface GoodsTypeEntity {
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
+	interface InfoBannerEntity {
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
+	interface MarketCouponInfoEntity {
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
+	interface MarketCouponUserEntity {
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
+	interface OrderInfoEntity {
+		/**
+		 * 任意键值
+		 */
+		[key: string]: any;
+	}
+
 	interface ChatMessageEntity {
 		/**
 		 * 任意键值
@@ -1086,6 +1135,10 @@ declare namespace Eps {
 		 */
 		"add"(data?: any): Promise<any>;
 		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
 		 * 权限标识
 		 */
 		permission: { delete: string; update: string; order: string; list: string; add: string };
@@ -1127,13 +1180,31 @@ declare namespace Eps {
 			[key: string]: any;
 		}>;
 		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: BaseSysLogEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
 		 * 权限标识
 		 */
-		permission: { setKeep: string; getKeep: string; clear: string; page: string };
+		permission: { setKeep: string; getKeep: string; clear: string; page: string; add: string };
 		/**
 		 * 权限状态
 		 */
-		_permission: { setKeep: boolean; getKeep: boolean; clear: boolean; page: boolean };
+		_permission: {
+			setKeep: boolean;
+			getKeep: boolean;
+			clear: boolean;
+			page: boolean;
+			add: boolean;
+		};
 		/**
 		 * 请求
 		 */
@@ -1425,6 +1496,26 @@ declare namespace Eps {
 		}>;
 		/**
 		 * 新增
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
+		 * info
+		 */
+		"info"(data?: any): Promise<DemoGoodsEntity>;
+		/**
+		 * list
+		 */
+		"list"(data?: any): Promise<DemoGoodsEntity[]>;
+		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: DemoGoodsEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * add
 		 */
 		"add"(data?: any): Promise<any>;
 		/**
@@ -1737,6 +1828,10 @@ declare namespace Eps {
 		 */
 		"add"(data?: any): Promise<any>;
 		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
 		 * 权限标识
 		 */
 		permission: {
@@ -1959,13 +2054,39 @@ declare namespace Eps {
 			[key: string]: any;
 		}>;
 		/**
+		 * info
+		 */
+		"info"(data?: any): Promise<RecycleDataEntity>;
+		/**
+		 * list
+		 */
+		"list"(data?: any): Promise<RecycleDataEntity[]>;
+		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: RecycleDataEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
 		 * 权限标识
 		 */
-		permission: { restore: string; info: string; page: string };
+		permission: { restore: string; info: string; page: string; list: string; add: string };
 		/**
 		 * 权限状态
 		 */
-		_permission: { restore: boolean; info: boolean; page: boolean };
+		_permission: {
+			restore: boolean;
+			info: boolean;
+			page: boolean;
+			list: boolean;
+			add: boolean;
+		};
 		/**
 		 * 请求
 		 */
@@ -2275,6 +2396,303 @@ declare namespace Eps {
 		request: Service["request"];
 	}
 
+	interface GoodsType {
+		/**
+		 * delete
+		 */
+		"delete"(data?: any): Promise<any>;
+		/**
+		 * update
+		 */
+		"update"(data?: any): Promise<any>;
+		/**
+		 * info
+		 */
+		"info"(data?: any): Promise<GoodsTypeEntity>;
+		/**
+		 * list
+		 */
+		"list"(data?: any): Promise<GoodsTypeEntity[]>;
+		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: GoodsTypeEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
+		 * 权限标识
+		 */
+		permission: {
+			delete: string;
+			update: string;
+			info: string;
+			list: string;
+			page: string;
+			add: string;
+		};
+		/**
+		 * 权限状态
+		 */
+		_permission: {
+			delete: boolean;
+			update: boolean;
+			info: boolean;
+			list: boolean;
+			page: boolean;
+			add: boolean;
+		};
+		/**
+		 * 请求
+		 */
+		request: Service["request"];
+	}
+
+	interface InfoBanner {
+		/**
+		 * delete
+		 */
+		"delete"(data?: any): Promise<any>;
+		/**
+		 * update
+		 */
+		"update"(data?: any): Promise<any>;
+		/**
+		 * info
+		 */
+		"info"(data?: any): Promise<InfoBannerEntity>;
+		/**
+		 * list
+		 */
+		"list"(data?: any): Promise<InfoBannerEntity[]>;
+		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: InfoBannerEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
+		 * 权限标识
+		 */
+		permission: {
+			delete: string;
+			update: string;
+			info: string;
+			list: string;
+			page: string;
+			add: string;
+		};
+		/**
+		 * 权限状态
+		 */
+		_permission: {
+			delete: boolean;
+			update: boolean;
+			info: boolean;
+			list: boolean;
+			page: boolean;
+			add: boolean;
+		};
+		/**
+		 * 请求
+		 */
+		request: Service["request"];
+	}
+
+	interface MarketCouponInfo {
+		/**
+		 * delete
+		 */
+		"delete"(data?: any): Promise<any>;
+		/**
+		 * update
+		 */
+		"update"(data?: any): Promise<any>;
+		/**
+		 * info
+		 */
+		"info"(data?: any): Promise<MarketCouponInfoEntity>;
+		/**
+		 * list
+		 */
+		"list"(data?: any): Promise<MarketCouponInfoEntity[]>;
+		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: MarketCouponInfoEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
+		 * 权限标识
+		 */
+		permission: {
+			delete: string;
+			update: string;
+			info: string;
+			list: string;
+			page: string;
+			add: string;
+		};
+		/**
+		 * 权限状态
+		 */
+		_permission: {
+			delete: boolean;
+			update: boolean;
+			info: boolean;
+			list: boolean;
+			page: boolean;
+			add: boolean;
+		};
+		/**
+		 * 请求
+		 */
+		request: Service["request"];
+	}
+
+	interface MarketCouponUser {
+		/**
+		 * delete
+		 */
+		"delete"(data?: any): Promise<any>;
+		/**
+		 * update
+		 */
+		"update"(data?: any): Promise<any>;
+		/**
+		 * info
+		 */
+		"info"(data?: any): Promise<MarketCouponUserEntity>;
+		/**
+		 * list
+		 */
+		"list"(data?: any): Promise<MarketCouponUserEntity[]>;
+		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: MarketCouponUserEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * add
+		 */
+		"add"(data?: any): Promise<any>;
+		/**
+		 * 权限标识
+		 */
+		permission: {
+			delete: string;
+			update: string;
+			info: string;
+			list: string;
+			page: string;
+			add: string;
+		};
+		/**
+		 * 权限状态
+		 */
+		_permission: {
+			delete: boolean;
+			update: boolean;
+			info: boolean;
+			list: boolean;
+			page: boolean;
+			add: boolean;
+		};
+		/**
+		 * 请求
+		 */
+		request: Service["request"];
+	}
+
+	interface OrderInfo {
+		/**
+		 * refundHandle
+		 */
+		"refundHandle"(data?: any): Promise<any>;
+		/**
+		 * logistics
+		 */
+		"logistics"(data?: any): Promise<any>;
+		/**
+		 * deliver
+		 */
+		"deliver"(data?: any): Promise<any>;
+		/**
+		 * delete
+		 */
+		"delete"(data?: any): Promise<any>;
+		/**
+		 * update
+		 */
+		"update"(data?: any): Promise<any>;
+		/**
+		 * info
+		 */
+		"info"(data?: any): Promise<OrderInfoEntity>;
+		/**
+		 * list
+		 */
+		"list"(data?: any): Promise<OrderInfoEntity[]>;
+		/**
+		 * page
+		 */
+		"page"(data?: any): Promise<{
+			pagination: { size: number; page: number; total: number; [key: string]: any };
+			list: OrderInfoEntity[];
+			[key: string]: any;
+		}>;
+		/**
+		 * 权限标识
+		 */
+		permission: {
+			refundHandle: string;
+			logistics: string;
+			deliver: string;
+			delete: string;
+			update: string;
+			info: string;
+			list: string;
+			page: string;
+		};
+		/**
+		 * 权限状态
+		 */
+		_permission: {
+			refundHandle: boolean;
+			logistics: boolean;
+			deliver: boolean;
+			delete: boolean;
+			update: boolean;
+			info: boolean;
+			list: boolean;
+			page: boolean;
+		};
+		/**
+		 * 请求
+		 */
+		request: Service["request"];
+	}
+
 	interface ChatMessage {
 		/**
 		 * page
@@ -2483,6 +2901,10 @@ declare namespace Eps {
 		space: { info: SpaceInfo; type: SpaceType };
 		task: { info: TaskInfo };
 		user: { address: UserAddress; info: UserInfo };
+		goods: { type: GoodsType };
+		info: { banner: InfoBanner };
+		market: { coupon: { info: MarketCouponInfo; user: MarketCouponUser } };
+		order: { info: OrderInfo };
 		chat: { message: ChatMessage; session: ChatSession };
 		test: Test;
 	};
