@@ -10,6 +10,13 @@
 		:initial-index="4"
 		fit="cover"
 	/>
+	<PictureGallery
+		:pano-list="panosList"
+		:scene-id="panoId"
+		:isSceneSelect="isGalleryOpen"
+		:projectId="projectId"
+		to-path="/pano"
+	/>
 	<div id="viewer"></div>
 	<el-dialog
 		:before-close="handleClose"
@@ -64,6 +71,8 @@ import "@photo-sphere-viewer/gallery-plugin/index.css";
 import arrow from "../static/icon/arrow.gif";
 import { useCool } from "/@/cool";
 import { ElMessage, ElNotification } from "element-plus";
+import PictureGallery from "/@/modules/panos/components/pictureGallery.vue";
+import { gridHTML } from "/@/modules/panos/const/const";
 
 const { service, route, router } = useCool();
 
@@ -117,20 +126,26 @@ onMounted(async () => {
 });
 
 watch(
-	() => route.query,
-	async () => {
-		nextTick(async () => {
-			await initPano();
-			viewer.value.setPanorama(panoramaUrl.value).then((res) => {
-				handleViewerReady();
-			});
+	() => route.query?.pano_id,
+	async (newId) => {
+		panoId.value = newId;
+		clearMarker();
+		await initPano();
+		viewer.value.setPanorama(panoramaUrl.value).then((res) => {
+			handleViewerReady();
 		});
 	}
 );
 
+const panosList = ref([]);
+const isGalleryOpen = ref(true);
+const changeIsGalleryOpen = () => {
+	isGalleryOpen.value = !isGalleryOpen.value;
+};
+
 const initPano = async () => {
 	try {
-		const promise = [];
+		const promise: any = [];
 		currentMarkers.value = [];
 		promise.push(
 			// service.panos.panos.info({ id: panoId.value }).then((res) => (panoInfo.value = res))
@@ -146,6 +161,7 @@ const initPano = async () => {
 						label: v.title,
 						value: v.id + ""
 					}));
+					panosList.value = res.panosList;
 					if (res.markersList.length) {
 						currentMarkers.value = res.markersList.map((v) => ({
 							id: v.id,
@@ -198,6 +214,12 @@ function initViewer() {
 			"move",
 			"download",
 			"gallery",
+			,
+			{
+				title: "场景列表",
+				content: gridHTML,
+				onClick: changeIsGalleryOpen
+			},
 			// {
 			// 	title: "Change points",
 			// 	content: "🔄",
@@ -246,8 +268,8 @@ function initViewer() {
 				isAddMarkerFormOpen.value = true;
 			} else {
 				if (e.marker.config.mt === "arrow") {
-					panoId.value = e.marker.config.navigate;
-					clearMarker();
+					// panoId.value = e.marker.config.navigate;
+					// clearMarker();
 					router.push(
 						`/pano?pano_id=${e.marker.config.navigate}&project_id=${projectId.value}`
 					);

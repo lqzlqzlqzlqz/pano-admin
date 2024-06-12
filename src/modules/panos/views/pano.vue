@@ -13,6 +13,13 @@
 		:initial-index="4"
 		fit="cover"
 	/>
+	<PictureGallery
+		:pano-list="panosList"
+		:scene-id="panoId"
+		:isSceneSelect="isGalleryOpen"
+		:projectId="projectId"
+		to-path="/panos/view"
+	/>
 	<div id="viewer"></div>
 	<el-dialog
 		:before-close="handleClose"
@@ -68,6 +75,8 @@ import "@photo-sphere-viewer/gallery-plugin/index.css";
 import arrow from "../static/icon/arrow.gif";
 import { useCool } from "/@/cool";
 import { ElMessage, ElNotification } from "element-plus";
+import PictureGallery from "../components/pictureGallery.vue";
+import { gridHTML } from "../const/const";
 
 const { service, route, router } = useCool();
 
@@ -122,9 +131,14 @@ onMounted(async () => {
 
 const origin = window.location.origin;
 
+const panosList = ref([]);
+const isGalleryOpen = ref(true);
+const changeIsGalleryOpen = () => {
+	isGalleryOpen.value = !isGalleryOpen.value;
+};
 const initPano = async () => {
 	try {
-		const promise = [];
+		const promise: any = [];
 		currentMarkers.value = [];
 		promise.push(
 			service.panos.panos.info({ id: panoId.value }).then((res) => (panoInfo.value = res))
@@ -132,6 +146,7 @@ const initPano = async () => {
 		promise.push(
 			service.panos.panos.list({ projectId: projectId.value }).then((res) => {
 				panosNavigateOps.value = res.map((v) => ({ label: v.title, value: v.id + "" }));
+				panosList.value = res;
 			})
 		);
 		promise.push(
@@ -170,6 +185,18 @@ watch(
 	}
 );
 
+watch(
+	() => route.query?.pano_id,
+	async (newId) => {
+		panoId.value = newId;
+		clearMarker();
+		await initPano();
+		viewer.value.setPanorama(panoramaUrl.value).then((res) => {
+			handleViewerReady();
+		});
+	}
+);
+
 // 点击标记显示marker弹窗
 const selectedMarker = ref({});
 
@@ -187,13 +214,12 @@ function initViewer() {
 			"move",
 			"download",
 			"gallery",
-			// {
-			// 	title: "Change points",
-			// 	content: "🔄",
-			// 	onClick: randomPoints
-			// },
-			"caption",
-			"fullscreen"
+			{
+				title: "场景列表",
+				content: gridHTML,
+				onClick: changeIsGalleryOpen
+			},
+			"caption"
 		],
 		plugins: [
 			[GalleryPlugin, { visibleOnLoad: true, hideOnClick: false }],
@@ -235,15 +261,15 @@ function initViewer() {
 				isAddMarkerFormOpen.value = true;
 			} else {
 				if (e.marker.config.mt === "arrow") {
-					panoId.value = e.marker.config.navigate;
-					clearMarker();
+					// panoId.value = e.marker.config.navigate;
+					// clearMarker();
 					router.push(
 						`/panos/view?pano_id=${e.marker.config.navigate}&project_id=${projectId.value}`
 					);
-					await initPano();
-					viewer.value.setPanorama(panoramaUrl.value).then((res) => {
-						handleViewerReady();
-					});
+					// await initPano();
+					// viewer.value.setPanorama(panoramaUrl.value).then((res) => {
+					// 	handleViewerReady();
+					// });
 				} else if (e.marker.config.mt === "graph") {
 					imageList.value = e.marker.config.pop;
 					nextTick(() => {
