@@ -571,7 +571,7 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 			newMarker = {
 				id: `marker_${Date.now()}`,
 				position: addPosition.value,
-				html: `<img src='http://qiniu-misc.hua10.com/1717154078197-9ff50574b17240db8de946ad02635fe6_arrow.gif' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
+				html: `<img src='http://qiniu-misc.hua10.com/1718070179654-dc4f0356995041418a2e582ac483f8af_arrow1.gif' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
 				anchor: "bottom center",
 				size: { width: 50, height: 50 },
 				tooltip: {
@@ -646,6 +646,7 @@ const handleRemoveMarker = async () => {
 	width: 100%;
 	height: 100%;
 }
+
 .pano-btns-container {
 	position: absolute;
 	right: 10px;
@@ -690,7 +691,9 @@ const handleRemoveMarker = async () => {
 	object-fit: contain;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	transition:
+		transform 0.3s ease,
+		box-shadow 0.3s ease;
 }
 
 .preview-image:hover {

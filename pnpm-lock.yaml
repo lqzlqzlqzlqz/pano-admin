@@ -14,6 +14,18 @@ importers:
       '@element-plus/icons-vue':
         specifier: ^2.3.1
         version: 2.3.1(vue@3.4.23(typescript@5.4.5))
+      '@photo-sphere-viewer/autorotate-plugin':
+        specifier: ^5.7.3
+        version: 5.7.4(@photo-sphere-viewer/core@5.7.4)
+      '@photo-sphere-viewer/core':
+        specifier: ^5.7.3
+        version: 5.7.4
+      '@photo-sphere-viewer/gallery-plugin':
+        specifier: ^5.7.3
+        version: 5.7.4(@photo-sphere-viewer/core@5.7.4)
+      '@photo-sphere-viewer/markers-plugin':
+        specifier: ^5.7.3
+        version: 5.7.4(@photo-sphere-viewer/core@5.7.4)
       '@vueuse/core':
         specifier: ^10.4.0
         version: 10.9.0(vue@3.4.23(typescript@5.4.5))
@@ -62,6 +74,9 @@ importers:
       nprogress:
         specifier: ^0.2.0
         version: 0.2.0
+      photo-sphere-viewer:
+        specifier: ^4.8.1
+        version: 4.8.1
       pinia:
         specifier: ^2.1.7
         version: 2.1.7(typescript@5.4.5)(vue@3.4.23(typescript@5.4.5))
@@ -581,6 +596,24 @@ packages:
 
   '@octokit/types@6.41.0':
     resolution: {integrity: sha512-eJ2jbzjdijiL3B4PrSQaSjuF2sPEQPVCPzBvTHJD9Nz+9dw2SGH4K4xeQJ77YfTq5bRQ+bD8wT11JbeDPmxmGg==}
+
+  '@photo-sphere-viewer/autorotate-plugin@5.7.4':
+    resolution: {integrity: sha512-FxWmxxDKvBqCsOp6DToFTo18dS/qZwAGTgxjeVvZfZowDyw1zTLO5KrwrrvVRjHfSUtKhF/F+SMFJHTDsHgFCw==}
+    peerDependencies:
+      '@photo-sphere-viewer/core': 5.7.4
+
+  '@photo-sphere-viewer/core@5.7.4':
+    resolution: {integrity: sha512-NwhJuxSdRrjb7oCJOgvD5ZBMJpgXLZjKhACmebvGB2FIM2A71l3vU/fzAzYjG+xjJt+93pYI/myBhL5Ds6wyYw==}
+
+  '@photo-sphere-viewer/gallery-plugin@5.7.4':
+    resolution: {integrity: sha512-Vb88gFU4XAp6Yn4SzP4BRFyrHXQlmAWkEy+I/dL9jlS8ONolI6j6FqH430si9FzYFPYps35HJcQSIMh7YoxTVw==}
+    peerDependencies:
+      '@photo-sphere-viewer/core': 5.7.4
+
+  '@photo-sphere-viewer/markers-plugin@5.7.4':
+    resolution: {integrity: sha512-HAR/qsBxOCHHlX2hU1AmjydPr4/wCgZtX2INXeaslM0T4YGq+o97V4S98FRpbQoSyrEPaD2DUl2ZqlXglIqH6Q==}
+    peerDependencies:
+      '@photo-sphere-viewer/core': 5.7.4
 
   '@pkgjs/parseargs@0.11.0':
     resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
@@ -1969,6 +2002,10 @@ packages:
     resolution: {integrity: sha512-gDKb8aZMDeD/tZWs9P6+q0J9Mwkdl6xMV8TjnGP3qJVJ06bdMgkbBlLU8IdfOsIsFz2BW1rNVT3XuNEl8zPAvw==}
     engines: {node: '>=8'}
 
+  photo-sphere-viewer@4.8.1:
+    resolution: {integrity: sha512-Yl1KZq1adtrajCOrf8Y79Qi4A35DfEu8atL779YOdA9XHoH2l2+sYovejnZlGgUM0hEbTyenRDoyXSy/MtioYg==}
+    deprecated: Use @photo-sphere-viewer/core instead, see https://photo-sphere-viewer.js.org/guide/migration.html
+
   picocolors@1.0.0:
     resolution: {integrity: sha512-1fygroTLlHu66zi26VoTDv8yRgm0Fccecssto+MhsZ0D/DGW2sm8E8AjW7NU5VVTRt5GxbeZ5qBuJr+HyLYkjQ==}
 
@@ -2254,6 +2291,12 @@ packages:
   text-table@0.2.0:
     resolution: {integrity: sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==}
 
+  three@0.147.0:
+    resolution: {integrity: sha512-LPTOslYQXFkmvceQjFTNnVVli2LaVF6C99Pv34fJypp8NbQLbTlu3KinZ0zURghS5zEehK+VQyvWuPZ/Sm8fzw==}
+
+  three@0.161.0:
+    resolution: {integrity: sha512-LC28VFtjbOyEu5b93K0bNRLw1rQlMJ85lilKsYj6dgTu+7i17W+JCCEbvrpmNHF1F3NAUqDSWq50UD7w9H2xQw==}
+
   tiny-warning@1.0.3:
     resolution: {integrity: sha512-lBN9zLN/oAf68o3zNXYrdCt1kP8WsiGW8Oo2ka41b2IM5JL/S1CTyX1rW0mb/zSuJun0ZUrDxx4sqvYS2FWzPA==}
 
@@ -2311,6 +2354,9 @@ packages:
     resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
     hasBin: true
+
+  uevent@2.2.0:
+    resolution: {integrity: sha512-48s5LF/c6R1fUmctGib/dWKhZjZLd4aK/85dwVAbwgHNBSO0k0UNp0ZKZpkSbU6633qYhgykYQPakTSuOxZopA==}
 
   unbox-primitive@1.0.2:
     resolution: {integrity: sha512-61pPlCD9h51VoreyJ0BReideM3MDKMKnh6+V9L08331ipq6Q8OFXZYiqP6n/tbHx4s5I9uRhcye6BrbkizkBDw==}
@@ -2975,6 +3021,22 @@ snapshots:
   '@octokit/types@6.41.0':
     dependencies:
       '@octokit/openapi-types': 12.11.0
+
+  '@photo-sphere-viewer/autorotate-plugin@5.7.4(@photo-sphere-viewer/core@5.7.4)':
+    dependencies:
+      '@photo-sphere-viewer/core': 5.7.4
+
+  '@photo-sphere-viewer/core@5.7.4':
+    dependencies:
+      three: 0.161.0
+
+  '@photo-sphere-viewer/gallery-plugin@5.7.4(@photo-sphere-viewer/core@5.7.4)':
+    dependencies:
+      '@photo-sphere-viewer/core': 5.7.4
+
+  '@photo-sphere-viewer/markers-plugin@5.7.4(@photo-sphere-viewer/core@5.7.4)':
+    dependencies:
+      '@photo-sphere-viewer/core': 5.7.4
 
   '@pkgjs/parseargs@0.11.0':
     optional: true
@@ -4512,6 +4574,11 @@ snapshots:
 
   path-type@4.0.0: {}
 
+  photo-sphere-viewer@4.8.1:
+    dependencies:
+      three: 0.147.0
+      uevent: 2.2.0
+
   picocolors@1.0.0: {}
 
   picomatch@2.3.1: {}
@@ -4823,6 +4890,10 @@ snapshots:
 
   text-table@0.2.0: {}
 
+  three@0.147.0: {}
+
+  three@0.161.0: {}
+
   tiny-warning@1.0.3: {}
 
   to-fast-properties@2.0.0: {}
@@ -4882,6 +4953,8 @@ snapshots:
       possible-typed-array-names: 1.0.0
 
   typescript@5.4.5: {}
+
+  uevent@2.2.0: {}
 
   unbox-primitive@1.0.2:
     dependencies:
