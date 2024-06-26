@@ -968,6 +968,10 @@ declare namespace Eps {
 		 */
 		"personUpdate"(data?: any): Promise<any>;
 		/**
+		 * 七牛云token
+		 */
+		"qiniuUpload"(data?: any): Promise<any>;
+		/**
 		 * 文件上传模式
 		 */
 		"uploadMode"(data?: any): Promise<any>;
@@ -992,6 +996,7 @@ declare namespace Eps {
 		 */
 		permission: {
 			personUpdate: string;
+			qiniuUpload: string;
 			uploadMode: string;
 			permmenu: string;
 			person: string;
@@ -1003,6 +1008,7 @@ declare namespace Eps {
 		 */
 		_permission: {
 			personUpdate: boolean;
+			qiniuUpload: boolean;
 			uploadMode: boolean;
 			permmenu: boolean;
 			person: boolean;

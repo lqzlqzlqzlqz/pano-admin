@@ -1,6 +1,6 @@
 <template>
 	<transition name="fade">
-		<div
+		<!-- <div
 			v-if="isSceneSelect"
 			class="image-scroll-container"
 			style="overflow-x: auto; white-space: nowrap"
@@ -32,6 +32,39 @@
 					</div>
 				</el-tooltip>
 			</div>
+		</div> -->
+		<div v-if="isSceneSelect" class="image-scroll-container">
+			<el-scrollbar ref="scrollbar">
+				<div class="scrollbar-flex-content">
+					<div></div>
+					<el-tooltip
+						v-for="(v, index) in panoList"
+						:key="index"
+						:content="v.title"
+						placement="top"
+						effect="dark"
+					>
+						<div
+							:style="{
+								padding: '3px',
+								margin: '3px 0',
+								background: sceneId == v.id ? '#F6B64C' : 'white',
+								cursor: 'pointer',
+								position: 'relative'
+							}"
+							@click="goToScene(v.id)"
+						>
+							<img
+								:src="v.thumb"
+								:alt="v.title"
+								style="width: 86px; height: auto; display: block"
+							/>
+							<div class="title">{{ v.title }}</div>
+						</div>
+					</el-tooltip>
+					<div></div>
+				</div>
+			</el-scrollbar>
 		</div>
 	</transition>
 </template>
@@ -39,6 +72,8 @@
 <script lang="ts" setup>
 import Vue from "vue";
 import { useCool } from "/@/cool";
+import { ref, onMounted } from "vue";
+import { ElScrollbar } from "element-plus";
 const props = defineProps<{
 	isSceneSelect: boolean;
 	projectId: any;
@@ -51,8 +86,25 @@ const { router } = useCool();
 const goToScene = (id: any) => {
 	router.push(`${props.toPath}?pano_id=${id}&project_id=${props.projectId}`);
 };
+
+const scrollbar = ref<InstanceType<typeof ElScrollbar> | null>(null);
+const handleWheel = (event: WheelEvent) => {
+	if (scrollbar.value) {
+		const wrap = scrollbar.value.wrapRef;
+		if (wrap) {
+			wrap.scrollLeft += event.deltaY;
+		}
+	}
+};
+
+onMounted(() => {
+	const wrap = scrollbar.value?.wrapRef;
+	if (wrap) {
+		wrap.addEventListener("wheel", handleWheel);
+	}
+});
 </script>
-<style scoped>
+<style scoped lang="scss">
 .image-scroll-container {
 	display: flex;
 	justify-content: center;
@@ -61,7 +113,7 @@ const goToScene = (id: any) => {
 	bottom: 100px;
 	width: 100%;
 	z-index: 100;
-	padding: 10px 0;
+	/* padding: 10px 0; */
 }
 
 .image-container {
@@ -118,5 +170,30 @@ const goToScene = (id: any) => {
 /* 添加进入结束的状态 */
 .fade-enter-to {
 	opacity: 1;
+}
+
+.scrollbar-flex-content {
+	display: flex;
+	gap: 10px;
+	padding: 10px 0;
+}
+.scrollbar-demo-item {
+	flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100px;
+	height: 50px;
+	margin: 10px;
+	text-align: center;
+	border-radius: 4px;
+	background: var(--el-color-danger-light-9);
+	color: var(--el-color-danger);
+}
+
+:deep() {
+	.el-scrollbar__thumb {
+		background: black;
+	}
 }
 </style>

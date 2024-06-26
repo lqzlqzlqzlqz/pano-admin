@@ -57,6 +57,14 @@
 			</el-form-item>
 		</el-form>
 	</el-dialog>
+	<MediaViewer
+		v-if="previewOpenConfig.visible"
+		:url-list="previewOpenConfig.list"
+		:initialIndex="previewOpenConfig.index"
+		:infinite="true"
+		:hideOnClickModal="true"
+		@close="closeViewer"
+	/>
 </template>
 
 <script lang="ts" setup>
@@ -73,6 +81,7 @@ import { useCool } from "/@/cool";
 import { ElMessage, ElNotification } from "element-plus";
 import PictureGallery from "/@/modules/panos/components/pictureGallery.vue";
 import { gridHTML } from "/@/modules/panos/const/const";
+import MediaViewer from "/@/modules/panos/components/mediaViewer.vue";
 
 const { service, route, router } = useCool();
 
@@ -200,6 +209,15 @@ watch(
 // 点击标记显示marker弹窗
 const selectedMarker = ref({});
 
+const previewOpenConfig = ref({
+	visible: false,
+	index: 0,
+	list: [] as string[]
+});
+const closeViewer = () => {
+	previewOpenConfig.value.visible = false;
+};
+
 function initViewer() {
 	viewer.value = new Viewer({
 		container: "viewer",
@@ -275,9 +293,11 @@ function initViewer() {
 					);
 				} else if (e.marker.config.mt === "graph") {
 					imageList.value = e.marker.config.pop;
-					nextTick(() => {
-						document.querySelector("#preview_img_list")?.click();
-					});
+					// nextTick(() => {
+					// 	document.querySelector("#preview_img_list")?.click();
+					// });
+					previewOpenConfig.value.list = imageList.value;
+					previewOpenConfig.value.visible = true;
 				}
 			}
 		}
@@ -639,6 +659,8 @@ const handleRemoveMarker = async () => {
 		ElMessage.error("删除失败,请重试!");
 	}
 };
+
+const getQiniuUploadToken = async () => {};
 </script>
 
 <style lang="scss" scoped>
@@ -691,9 +713,7 @@ const handleRemoveMarker = async () => {
 	object-fit: contain;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	transition:
-		transform 0.3s ease,
-		box-shadow 0.3s ease;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .preview-image:hover {

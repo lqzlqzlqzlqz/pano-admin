@@ -44,7 +44,14 @@
 				label="配图/视频"
 				prop="pop"
 			>
-				<cl-upload type="file" v-model="addMarkerFormData.pop" multiple />
+				<!-- <cl-upload type="file" v-model="addMarkerFormData.pop" multiple /> -->
+				<UploadWidthQiniu
+					:limit="5"
+					:file-echo="addMarkerFormData.pop"
+					:isPreview="true"
+					:disabled="false"
+					@setImgList="setImgList"
+				/>
 			</el-form-item>
 			<el-form-item v-else label="跳转" prop="to">
 				<!-- <el-input v-model="addMarkerFormData.to" /> -->
@@ -68,6 +75,14 @@
 			</el-form-item>
 		</el-form>
 	</el-dialog>
+	<MediaViewer
+		v-if="previewOpenConfig.visible"
+		:url-list="previewOpenConfig.list"
+		:initialIndex="previewOpenConfig.index"
+		:infinite="true"
+		:hideOnClickModal="true"
+		@close="closeViewer"
+	/>
 </template>
 
 <script lang="ts" setup>
@@ -84,6 +99,8 @@ import { useCool } from "/@/cool";
 import { ElMessage, ElNotification } from "element-plus";
 import PictureGallery from "../components/pictureGallery.vue";
 import { gridHTML } from "../const/const";
+import UploadWidthQiniu from "../components/uploadWidthQiniu.vue";
+import MediaViewer from "../components/mediaViewer.vue";
 
 const { service, route, router } = useCool();
 
@@ -210,6 +227,15 @@ watch(
 // 点击标记显示marker弹窗
 const selectedMarker = ref({});
 
+const previewOpenConfig = ref({
+	visible: false,
+	index: 0,
+	list: [] as string[]
+});
+const closeViewer = () => {
+	previewOpenConfig.value.visible = false;
+};
+
 function initViewer() {
 	viewer.value = new Viewer({
 		container: "viewer",
@@ -282,13 +308,15 @@ function initViewer() {
 					// });
 				} else if (e.marker.config.mt === "graph") {
 					imageList.value = e.marker.config.pop;
-					if (imageList.value.length && imageList.value[0].includes(".mp4")) {
-						isVideoPreviewOpen.value = true;
-					} else {
-						nextTick(() => {
-							document.querySelector("#preview_img_list")?.click();
-						});
-					}
+					previewOpenConfig.value.list = imageList.value;
+					previewOpenConfig.value.visible = true;
+					// if (imageList.value?.length && imageList.value[0]?.includes(".mp4")) {
+					// 	isVideoPreviewOpen.value = true;
+					// } else {
+					// 	nextTick(() => {
+					// 		document.querySelector("#preview_img_list")?.click();
+					// 	});
+					// }
 				}
 			}
 		}
@@ -649,6 +677,10 @@ const handleRemoveMarker = async () => {
 		console.log(e);
 		ElMessage.error("删除失败,请重试!");
 	}
+};
+
+const setImgList = (imgList: string[]) => {
+	addMarkerFormData.value.pop = imgList;
 };
 </script>
 
