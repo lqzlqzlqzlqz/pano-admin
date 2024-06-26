@@ -152,10 +152,12 @@ const initPano = async () => {
 			service.panos.panos.info({ id: panoId.value }).then((res) => (panoInfo.value = res))
 		);
 		promise.push(
-			service.panos.panos.list({ projectId: projectId.value }).then((res) => {
-				panosNavigateOps.value = res.map((v) => ({ label: v.title, value: v.id + "" }));
-				panosList.value = res;
-			})
+			service.panos.panos
+				.list({ projectId: projectId.value, order: "no", sort: "asc" })
+				.then((res) => {
+					panosNavigateOps.value = res.map((v) => ({ label: v.title, value: v.id + "" }));
+					panosList.value = res;
+				})
 		);
 		promise.push(
 			service.markers.markers.list({ panoId: panoId.value }).then((res) => {
@@ -700,9 +702,7 @@ const handleRemoveMarker = async () => {
 	object-fit: contain;
 	border-radius: 10px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-	transition:
-		transform 0.3s ease,
-		box-shadow 0.3s ease;
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .preview-image:hover {

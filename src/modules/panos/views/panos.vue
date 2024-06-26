@@ -209,6 +209,12 @@ const Upsert = useUpsert({
 			}
 		},
 		{
+			label: "序号",
+			prop: "no",
+			component: { name: "el-input", props: { type: "number" } },
+			required: false
+		},
+		{
 			label: "相对于地图的位置",
 			prop: "position",
 			component: { name: "slot-change-map-position" }
@@ -219,7 +225,6 @@ const Upsert = useUpsert({
 			component: { name: "cl-upload" },
 			required: true
 		},
-
 		{
 			label: "描述",
 			prop: "description",
@@ -269,7 +274,7 @@ const Table = useTable({
 			minWidth: 100,
 			component: { name: "cl-image", props: { size: 60 } }
 		},
-		// { label: "路由", prop: "route", minWidth: 140 },
+		{ label: "序号", prop: "no" },
 		{
 			label: "链接",
 			prop: "url",
@@ -298,7 +303,9 @@ const Crud = useCrud(
 	},
 	(app) => {
 		app.refresh({
-			projectId: projectId.value ? projectId.value : undefined
+			projectId: projectId.value ? projectId.value : undefined,
+			prop: "no",
+			sort: "desc"
 		});
 	}
 );

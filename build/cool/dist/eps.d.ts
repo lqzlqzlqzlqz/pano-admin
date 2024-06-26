@@ -503,6 +503,10 @@ declare namespace Eps {
 		 */
 		music?: string;
 		/**
+		 * 序号 no
+		 */
+		no?: number;
+		/**
 		 * 创建时间
 		 */
 		createTime?: Date;
