@@ -4,7 +4,6 @@
 			style="margin: 20px auto"
 			:action="domain"
 			:data="QiniuData"
-			:on-remove="handleRemove"
 			:on-error="uploadError"
 			:on-change="onChange"
 			:on-success="uploadSuccess"
@@ -19,62 +18,76 @@
 		>
 			<el-icon><Plus /></el-icon>
 			<template #file="{ file }">
-				<div v-if="isImage(file.url)">
-					<img
-						class="el-upload-list__item-thumbnail upload_img_fit"
-						:src="file.url"
-						alt=""
-					/>
-					<span class="el-upload-list__item-actions">
-						<span
-							class="el-upload-list__item-preview"
-							@click="handlePictureCardPreview(file)"
-						>
-							<el-icon><zoom-in /></el-icon>
-						</span>
-						<!-- <span
-							v-if="!disabled"
-							class="el-upload-list__item-delete"
-							@click="handleDownload(file)"
-						>
-							<el-icon><Download /></el-icon>
-						</span> -->
-						<span
-							v-if="!disabled"
-							class="el-upload-list__item-delete"
-							@click="handleRemove(file.url)"
-						>
-							<el-icon><Delete /></el-icon>
-						</span>
-					</span>
+				<div
+					v-show="file.status === 'uploading' || file.raw"
+					style="
+						width: 100%;
+						height: 100%;
+						display: flex;
+						justify-content: center;
+						align-items: center;
+					"
+				>
+					<el-progress type="circle" :percentage="file.percentage" />
 				</div>
-				<div v-else>
-					<video width="100%" height="100%">
-						<source :src="file.url" type="video/mp4" />
-						Your browser does not support the video tag.
-					</video>
-					<span class="el-upload-list__item-actions">
-						<span
-							class="el-upload-list__item-preview"
-							@click="handlePictureCardPreview(file)"
-						>
-							<el-icon><zoom-in /></el-icon>
-						</span>
-						<!-- <span
+				<div v-show="file.status !== 'uploading'">
+					<div v-if="isImage(file.url)">
+						<img
+							class="el-upload-list__item-thumbnail upload_img_fit"
+							:src="file.url"
+							alt=""
+						/>
+						<span class="el-upload-list__item-actions">
+							<span
+								class="el-upload-list__item-preview"
+								@click="handlePictureCardPreview(file)"
+							>
+								<el-icon><zoom-in /></el-icon>
+							</span>
+							<!-- <span
 							v-if="!disabled"
 							class="el-upload-list__item-delete"
 							@click="handleDownload(file)"
 						>
 							<el-icon><Download /></el-icon>
 						</span> -->
-						<span
+							<span
+								v-if="!disabled"
+								class="el-upload-list__item-delete"
+								@click="handleRemove(file.url)"
+							>
+								<el-icon><Delete /></el-icon>
+							</span>
+						</span>
+					</div>
+					<div v-else>
+						<video width="100%" height="100%">
+							<source :src="file.url" type="video/mp4" />
+							Your browser does not support the video tag.
+						</video>
+						<span class="el-upload-list__item-actions">
+							<span
+								class="el-upload-list__item-preview"
+								@click="handlePictureCardPreview(file)"
+							>
+								<el-icon><zoom-in /></el-icon>
+							</span>
+							<!-- <span
 							v-if="!disabled"
 							class="el-upload-list__item-delete"
-							@click="handleRemove(file.url)"
+							@click="handleDownload(file)"
 						>
-							<el-icon><Delete /></el-icon>
+							<el-icon><Download /></el-icon>
+						</span> -->
+							<span
+								v-if="!disabled"
+								class="el-upload-list__item-delete"
+								@click="handleRemove(file.url)"
+							>
+								<el-icon><Delete /></el-icon>
+							</span>
 						</span>
-					</span>
+					</div>
 				</div>
 			</template>
 		</el-upload>
@@ -133,12 +146,12 @@ const QiniuData = reactive<QiniuData>({
 });
 const publicDomain = ref("");
 
-// watch(
-// 	() => props.fileEcho,
-// 	() => {
-// 		initImgs();
-// 	}
-// );
+watch(
+	() => props.fileEcho,
+	() => {
+		initImgs();
+	}
+);
 
 onMounted(() => {
 	getQiniuToken();
@@ -174,24 +187,33 @@ const handlePictureCardPreview = (file: any) => {
 
 const handleRemove = (fileUrl: string) => {
 	fileList.value = fileList.value.filter((v) => v.url !== fileUrl);
+	console.log(fileUrl, fileList.value);
 	emit(
 		"setImgList",
 		fileList.value.map((v) => v.url)
 	);
 };
-
+const loading = ref(false);
 const beforeAvatarUpload = (file: any) => {
 	QiniuData.data = file;
-	QiniuData.key = `${file.name}`;
+	QiniuData.key = `${Date.now()}-${file.name}`;
+	loading.value = true;
 };
 
 const uploadSuccess = (response: any, file: any, fl: any[]) => {
 	const url = `${publicDomain.value}/${response.key}`;
 	file.url = url;
-	emit(
-		"setImgList",
-		fl.map((v) => v.url)
-	);
+	if (fl.every((v) => v.status !== "uploading")) {
+		emit(
+			"setImgList",
+			fl.map((v) => v.url)
+		);
+	}
+	// ElMessage({
+	// 	message: "上传成功！",
+	// 	type: "success",
+	// 	center: true
+	// });
 };
 
 const uploadError = (err: any, file: any, fl: any[]) => {
@@ -200,6 +222,7 @@ const uploadError = (err: any, file: any, fl: any[]) => {
 		type: "error",
 		center: true
 	});
+	loading.value = false;
 };
 
 const getQiniuToken = async () => {
@@ -214,11 +237,19 @@ const isImage = (url: string) => {
 	return /\.(jpg|jpeg|png|gif)$/.test(url);
 };
 
-const onChange = (uploadFile: UploadFile, uploadFiles: UploadFiles) => {};
+const onChange = (uploadFile: UploadFile, uploadFiles: UploadFiles) => {
+	console.log("CHANGE", uploadFile, uploadFiles);
+	const idLoading = uploadFiles.every((v) => v.status === "uploading");
+	loading.value = idLoading;
+};
 
 const closeViewer = () => {
 	dialogVisible.value = false;
 };
+
+defineExpose({
+	loading
+});
 </script>
   
 <style scoped lang="scss">

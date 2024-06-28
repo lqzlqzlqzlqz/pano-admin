@@ -32,7 +32,7 @@
 		:before-close="handleClose"
 		v-model="isAddMarkerFormOpen"
 		:title="selectedMarker.id ? '修改热点' : '添加热点'"
-		width="500"
+		width="582"
 		center
 	>
 		<el-form ref="ruleFormRef" :model="addMarkerFormData" :rules="rules" label-width="auto">
@@ -46,11 +46,11 @@
 			>
 				<!-- <cl-upload type="file" v-model="addMarkerFormData.pop" multiple /> -->
 				<UploadWidthQiniu
-					:limit="5"
 					:file-echo="addMarkerFormData.pop"
 					:isPreview="true"
 					:disabled="false"
 					@setImgList="setImgList"
+					ref="uploadRef"
 				/>
 			</el-form-item>
 			<el-form-item v-else label="跳转" prop="to">
@@ -65,13 +65,19 @@
 				</el-select>
 			</el-form-item>
 			<el-form-item>
-				<el-button type="primary" @click="handleAddMarkerFormSubmit(ruleFormRef)">
-					{{ selectedMarker.id ? "保存" : "创建" }}
-				</el-button>
-				<el-button @click="handleAddMarkerFormClose">取消</el-button>
-				<el-button v-if="selectedMarker.id" type="danger" @click="handleRemoveMarker"
-					>删除</el-button
-				>
+				<div style="display: flex; justify-content: flex-end; width: 100%">
+					<el-button
+						type="primary"
+						@click="handleAddMarkerFormSubmit(ruleFormRef)"
+						:disabled="uploadRef?.loading"
+					>
+						{{ selectedMarker.id ? "保存" : "创建" }}
+					</el-button>
+					<el-button @click="handleAddMarkerFormClose">取消</el-button>
+					<el-button v-if="selectedMarker.id" type="danger" @click="handleRemoveMarker"
+						>删除</el-button
+					>
+				</div>
 			</el-form-item>
 		</el-form>
 	</el-dialog>
@@ -96,7 +102,7 @@ import "@photo-sphere-viewer/markers-plugin/index.css";
 import "@photo-sphere-viewer/gallery-plugin/index.css";
 import arrow from "../static/icon/arrow.gif";
 import { useCool } from "/@/cool";
-import { ElMessage, ElNotification } from "element-plus";
+import { ElMessage, ElMessageBox, ElNotification } from "element-plus";
 import PictureGallery from "../components/pictureGallery.vue";
 import { gridHTML } from "../const/const";
 import UploadWidthQiniu from "../components/uploadWidthQiniu.vue";
@@ -517,7 +523,19 @@ const handleClick = (event) => {
 	addPosition.value = { yaw, pitch };
 	isAddMarkerFormOpen.value = true;
 };
-const handleAddMarkerFormClose = () => {
+const handleAddMarkerFormClose = async () => {
+	if (uploadRef.value?.loading) {
+		const isDone = await ElMessageBox.confirm("当前有文件正在上传，是否退出？")
+			.then(() => {
+				return true;
+			})
+			.catch((e) => {
+				return false;
+			});
+		if (!isDone) {
+			return false;
+		}
+	}
 	isAddMarkerFormOpen.value = false;
 	addMarkerFormData.value = {
 		tooltip: "",
@@ -529,9 +547,11 @@ const handleAddMarkerFormClose = () => {
 	selectedMarker.value = {};
 };
 
-const handleClose = (done) => {
-	handleAddMarkerFormClose();
-	done();
+const handleClose = async (done) => {
+	const res = await handleAddMarkerFormClose();
+	if (res) {
+		done();
+	}
 };
 
 const handleAddMarkerGraphFormClose = () => {
@@ -682,6 +702,7 @@ const handleRemoveMarker = async () => {
 const setImgList = (imgList: string[]) => {
 	addMarkerFormData.value.pop = imgList;
 };
+const uploadRef = ref();
 </script>
 
 <style lang="scss" scoped>
