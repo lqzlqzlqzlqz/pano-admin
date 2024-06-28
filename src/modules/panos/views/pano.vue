@@ -258,7 +258,7 @@ function initViewer() {
 			"caption"
 		],
 		plugins: [
-			[GalleryPlugin, { visibleOnLoad: true, hideOnClick: false }],
+			[GalleryPlugin, { visibleOnLoad: false, hideOnClick: false }],
 			[AutorotatePlugin, { autostartDelay: null, autorotateSpeed: "1rpm" }],
 			[MarkersPlugin, { markers: [] }]
 		]

@@ -4,54 +4,54 @@
 			<div ref="wrapper" :tabindex="-1" class="el-image-viewer__wrapper" :style="{ zIndex }">
 				<div class="el-image-viewer__mask" @click.self="hideOnClickModal && hide()"></div>
 				<!-- CLOSE -->
-				<span class="el-image-viewer__btn el-image-viewer__close" @click="hide">
-					<el-icon>
+				<span class="el-image-viewer__btn el-image-viewer__close btn-bgd" @click="hide">
+					<el-icon color="black">
 						<Close />
 					</el-icon>
 				</span>
 				<!-- ARROW -->
 				<template v-if="!isSingle">
 					<span
-						class="el-image-viewer__btn el-image-viewer__prev"
+						class="el-image-viewer__btn el-image-viewer__prev btn-bgd"
 						:class="{ 'is-disabled': !infinite && isFirst }"
 						@click="prev"
 					>
-						<el-icon>
+						<el-icon color="black">
 							<ArrowLeft />
 						</el-icon>
 					</span>
 					<span
-						class="el-image-viewer__btn el-image-viewer__next"
+						class="el-image-viewer__btn el-image-viewer__next btn-bgd"
 						:class="{ 'is-disabled': !infinite && isLast }"
 						@click="next"
 					>
-						<el-icon>
+						<el-icon color="black">
 							<ArrowRight />
 						</el-icon>
 					</span>
 				</template>
 				<!-- ACTIONS -->
-				<div v-if="isImage" class="el-image-viewer__btn el-image-viewer__actions">
+				<div v-if="isImage" class="el-image-viewer__btn el-image-viewer__actions btn-bgd">
 					<div class="el-image-viewer__actions__inner">
-						<el-icon @click="handleActions('zoomOut')">
+						<el-icon @click="handleActions('zoomOut')" color="black">
 							<ZoomOut />
 						</el-icon>
-						<el-icon @click="handleActions('zoomIn')">
+						<el-icon @click="handleActions('zoomIn')" color="black">
 							<ZoomIn />
 						</el-icon>
 						<i class="el-image-viewer__actions__divider"></i>
 
-						<el-icon @click="toggleMode">
+						<el-icon @click="toggleMode" color="black">
 							<component :is="mode.icon"></component>
 							<FullScreen />
 						</el-icon>
 						<i class="el-image-viewer__actions__divider"></i>
 
-						<el-icon @click="handleActions('anticlocelise')">
+						<el-icon @click="handleActions('anticlocelise')" color="black">
 							<RefreshLeft />
 						</el-icon>
 
-						<el-icon @click="handleActions('clocelise')">
+						<el-icon @click="handleActions('clocelise')" color="black">
 							<RefreshRight />
 						</el-icon>
 					</div>
@@ -467,3 +467,9 @@ onMounted(() => {
 	wrapper.value?.focus?.();
 });
 </script>
+
+<style scoped lang="scss">
+.btn-bgd {
+	background: white;
+}
+</style>
