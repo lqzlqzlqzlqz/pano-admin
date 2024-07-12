@@ -226,6 +226,7 @@ watch(
 		await initPano();
 		viewer.value.setPanorama(panoramaUrl.value).then((res) => {
 			handleViewerReady();
+			viewer.value.navbar.setCaption(panoInfo.value?.title ?? "");
 		});
 	}
 );
@@ -247,7 +248,7 @@ function initViewer() {
 		container: "viewer",
 		panorama: panoramaUrl.value || defaultUrl,
 		caption: panoInfo.value?.title ?? "",
-		touchmoveTwoFingers: true,
+		touchmoveTwoFingers: false,
 		mousewheelCtrlKey: false,
 		navbar: [
 			"autorotate",

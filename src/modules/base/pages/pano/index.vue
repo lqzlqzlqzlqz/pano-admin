@@ -142,6 +142,7 @@ watch(
 		await initPano();
 		viewer.value.setPanorama(panoramaUrl.value).then((res) => {
 			handleViewerReady();
+			viewer.value.navbar.setCaption(panoInfo.value?.title ?? "");
 		});
 	}
 );
@@ -233,7 +234,7 @@ function initViewer() {
 			autorotate: "自动旋转",
 			markers: "标记",
 			gallery: "图库",
-			twoFingers: "请用双指拖动",
+			twoFingers: "请用双指拖动"
 		},
 		navbar: [
 			"autorotate",
