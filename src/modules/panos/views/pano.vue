@@ -53,17 +53,44 @@
 					ref="uploadRef"
 				/>
 			</el-form-item>
-			<el-form-item v-else label="跳转" prop="to">
-				<!-- <el-input v-model="addMarkerFormData.to" /> -->
-				<el-select v-model="addMarkerFormData.to" placeholder="选择" style="width: 100%">
-					<el-option
-						v-for="item in panosNavigateOps"
-						:key="item.value"
-						:label="item.label"
-						:value="item.value"
-					/>
-				</el-select>
-			</el-form-item>
+			<template v-else>
+				<el-form-item label="跳转" prop="to">
+					<!-- <el-input v-model="addMarkerFormData.to" /> -->
+					<el-select
+						v-model="addMarkerFormData.to"
+						placeholder="选择"
+						style="width: 100%"
+					>
+						<el-option
+							v-for="item in panosNavigateOps"
+							:key="item.value"
+							:label="item.label"
+							:value="item.value"
+						/>
+					</el-select>
+				</el-form-item>
+				<el-form-item label="标识" prop="path">
+					<!-- <el-input v-model="addMarkerFormData.to" /> -->
+					<el-select
+						v-model="addMarkerFormData.path"
+						placeholder="请选择标识"
+						style="width: 100%"
+					>
+						<el-option
+							v-for="item in panosArrowsOps"
+							:key="item.key"
+							:label="item.label"
+							:value="item.value"
+						>
+							<span style="float: left">{{ item.label }}</span>
+							<img
+								style="float: right; width: 50px; height: 50px; object-fit: contain"
+								:src="item.value"
+							/>
+						</el-option>
+					</el-select>
+				</el-form-item>
+			</template>
 			<el-form-item>
 				<div style="display: flex; justify-content: flex-end; width: 100%">
 					<el-button
@@ -141,6 +168,7 @@ const panoId = ref("");
 const projectId = ref("");
 
 const panosNavigateOps = ref([]);
+const panosArrowsOps = ref([]);
 
 const isImagePreviewOpen = ref(false);
 const isVideoPreviewOpen = ref(false);
@@ -167,6 +195,10 @@ const isGalleryOpen = ref(true);
 const changeIsGalleryOpen = () => {
 	isGalleryOpen.value = !isGalleryOpen.value;
 };
+
+// 使用正则表达式提取 src 的值
+const regex = /src=['"]([^'"]+)['"]/;
+
 const initPano = async () => {
 	try {
 		const promise: any = [];
@@ -181,6 +213,15 @@ const initPano = async () => {
 					panosNavigateOps.value = res.map((v) => ({ label: v.title, value: v.id + "" }));
 					panosList.value = res;
 				})
+		);
+		promise.push(
+			service.arrows.base.list().then((res) => {
+				panosArrowsOps.value = res.map((v) => ({
+					label: v.name,
+					value: v.path,
+					key: v.id
+				}));
+			})
 		);
 		promise.push(
 			service.markers.markers.list({ panoId: panoId.value }).then((res) => {
@@ -301,6 +342,12 @@ function initViewer() {
 				addMarkerFormData.value.tooltip = selectedMarker.value.tooltip.content;
 				addMarkerFormData.value.to = selectedMarker.value.navigate;
 				addMarkerFormData.value.pop = selectedMarker.value.pop;
+				const imgStr = selectedMarker.value.html;
+				const match = imgStr?.match(regex);
+				if (match && match[1]) {
+					addMarkerFormData.value.path = match[1];
+				}
+
 				isAddMarkerFormOpen.value = true;
 			} else {
 				if (e.marker.config.mt === "arrow") {
@@ -430,12 +477,14 @@ const rules = ref({
 	pop: [
 		{ required: true, message: "请上传配图/视频", trigger: "change" },
 		{ type: "array", message: "配图/视频必须是一个数组", trigger: "change" }
-	]
+	],
+	path: [{ required: true, message: "请选择标识", trigger: "change" }]
 });
 const addMarkerFormData = ref({
 	tooltip: "",
 	to: "",
-	pop: []
+	pop: [],
+	path: ""
 });
 
 const isAltPressed = ref(false); // 是否按下alt
@@ -541,7 +590,8 @@ const handleAddMarkerFormClose = async () => {
 	addMarkerFormData.value = {
 		tooltip: "",
 		to: "",
-		pop: []
+		pop: [],
+		path: ""
 	};
 	if (altMarkerId.value) markersPlugin.value.removeMarker(altMarkerId.value);
 	altMarkerId.value = "";
@@ -574,7 +624,9 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 		selectedMarker.value.navigate = addMarkerFormData.value.to;
 		selectedMarker.value.pop = addMarkerFormData.value.pop;
 		selectedMarker.value.tooltip.content = addMarkerFormData.value.tooltip;
-
+		if (selectedMarker.value.mt === "arrow") {
+			selectedMarker.value.html = `<img src='${addMarkerFormData.value.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`;
+		}
 		try {
 			await service.markers.markers.update(selectedMarker.value);
 
@@ -585,7 +637,8 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 			addMarkerFormData.value = {
 				tooltip: "",
 				to: "",
-				pop: []
+				pop: [],
+				path: ""
 			};
 			altMarkerId.value = "";
 			selectedMarker.value = {};
@@ -631,7 +684,7 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 			newMarker = {
 				id: `marker_${Date.now()}`,
 				position: addPosition.value,
-				html: `<img src='http://qiniu-misc.hua10.com/1718070179654-dc4f0356995041418a2e582ac483f8af_arrow1.gif' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
+				html: `<img src='${addMarkerFormData.value.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
 				anchor: "bottom center",
 				size: { width: 50, height: 50 },
 				tooltip: {
