@@ -1,6 +1,9 @@
 <template>
 	<div class="pano-btns-container">
 		<el-button @click="changeIsAddMarker">{{ isAddMarker ? "完成" : "设置/添加" }}</el-button>
+		<div>
+			<cl-upload type="file" text="设置背景音乐" v-model="musicUrl" />
+		</div>
 	</div>
 	<el-image
 		id="preview_img_list"
@@ -20,6 +23,7 @@
 		:projectId="projectId"
 		to-path="/panos/view"
 	/>
+
 	<div id="viewer"></div>
 	<el-dialog v-model="isVideoPreviewOpen">
 		<video
@@ -134,6 +138,7 @@ import PictureGallery from "../components/pictureGallery.vue";
 import { gridHTML } from "../const/const";
 import UploadWidthQiniu from "../components/uploadWidthQiniu.vue";
 import MediaViewer from "../components/mediaViewer.vue";
+import AudioBase from "../components/audio.vue";
 
 const { service, route, router } = useCool();
 
@@ -166,6 +171,8 @@ const defaultUrl = "";
 const panoInfo = ref<any>();
 const panoId = ref("");
 const projectId = ref("");
+const musicUrl = ref("");
+const isMusic = ref(false);
 
 const panosNavigateOps = ref([]);
 const panosArrowsOps = ref([]);
@@ -243,6 +250,10 @@ const initPano = async () => {
 			})
 		);
 		await Promise.all(promise);
+		if (panoInfo.value?.music) {
+			isMusic.value = true;
+		}
+		musicUrl.value = panoInfo.value?.music;
 		panoramaUrl.value = panoInfo.value?.panoSrc ?? defaultUrl;
 		console.log(panoramaUrl.value, panoId.value);
 	} catch (e) {
@@ -296,7 +307,6 @@ function initViewer() {
 			"zoom",
 			"markers",
 			"move",
-			"download",
 			"gallery",
 			{
 				title: "场景列表",
@@ -757,6 +767,25 @@ const setImgList = (imgList: string[]) => {
 	addMarkerFormData.value.pop = imgList;
 };
 const uploadRef = ref();
+const updateMusic = async () => {
+	try {
+		await service.panos.panos.update({
+			id: Number(panoId.value),
+			music: musicUrl.value
+		});
+		ElMessage.success("音频更换成功！");
+	} catch (e) {
+		ElMessage.error("音频更换失败，请重试！");
+		musicUrl.value = "";
+	}
+};
+watch(musicUrl, () => {
+	if (isMusic.value) {
+		isMusic.value = false;
+		return;
+	}
+	updateMusic();
+});
 </script>
 
 <style lang="scss" scoped>
@@ -770,6 +799,9 @@ const uploadRef = ref();
 	right: 10px;
 	top: 10px;
 	z-index: 100;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 
 .image-preview-modal {
@@ -835,5 +867,15 @@ const uploadRef = ref();
 	color: #fff;
 	font-size: 24px;
 	cursor: pointer;
+}
+
+.audio-container {
+	position: absolute;
+	right: 10px;
+	top: 100px;
+	z-index: 100;
+	background: white;
+	padding: 10px;
+	border-radius: 10px;
 }
 </style>

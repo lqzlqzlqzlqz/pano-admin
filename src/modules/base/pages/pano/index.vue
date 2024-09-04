@@ -1,4 +1,15 @@
 <template>
+	<div class="pano-btns-container">
+		<el-button
+			v-show="musicUrl"
+			class="btns"
+			type="info"
+			:icon="isPaused ? VideoPlay : VideoPause"
+			@click="isPaused ? togglesound('play') : togglesound('pause')"
+			circle
+			size="large"
+		/>
+	</div>
 	<el-image
 		id="preview_img_list"
 		style="width: 100px; height: 100px; position: absolute; left: -10000px"
@@ -17,6 +28,14 @@
 		:projectId="projectId"
 		to-path="/pano"
 	/>
+	<audio
+		style="display: none"
+		ref="audioRef"
+		id="bg-music"
+		controls="controls"
+		:src="musicUrl"
+		autoPlay
+	></audio>
 	<div id="viewer"></div>
 	<el-dialog
 		:before-close="handleClose"
@@ -68,7 +87,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
+import { ref, onMounted, onUnmounted, watch, nextTick, computed } from "vue";
 import { Viewer } from "@photo-sphere-viewer/core";
 import { MarkersPlugin } from "@photo-sphere-viewer/markers-plugin";
 import { GalleryPlugin } from "@photo-sphere-viewer/gallery-plugin";
@@ -82,6 +101,7 @@ import { ElMessage, ElNotification } from "element-plus";
 import PictureGallery from "/@/modules/panos/components/pictureGallery.vue";
 import { gridHTML } from "/@/modules/panos/const/const";
 import MediaViewer from "/@/modules/panos/components/mediaViewer.vue";
+import { VideoPlay, VideoPause } from "@element-plus/icons-vue";
 
 const { service, route, router } = useCool();
 
@@ -152,7 +172,7 @@ const isGalleryOpen = ref(true);
 const changeIsGalleryOpen = () => {
 	isGalleryOpen.value = !isGalleryOpen.value;
 };
-
+const musicUrl = ref("");
 const initPano = async () => {
 	try {
 		const promise: any = [];
@@ -167,6 +187,8 @@ const initPano = async () => {
 				.then((res) => {
 					if (!res.panoDetail) router.push("/404");
 					panoInfo.value = res.panoDetail;
+					musicUrl.value = panoInfo.value?.music;
+					console.log(musicUrl.value);
 					panosNavigateOps.value = res.panosList.map((v) => ({
 						label: v.title,
 						value: v.id + ""
@@ -241,7 +263,6 @@ function initViewer() {
 			"zoom",
 			"markers",
 			"move",
-			"download",
 			"gallery",
 			,
 			{
@@ -672,6 +693,48 @@ const handleRemoveMarker = async () => {
 };
 
 const getQiniuUploadToken = async () => {};
+
+const audioRef = ref();
+const isPaused = ref(true);
+function togglesound(option: string) {
+	nextTick(() => {
+		userIsActive.value = true;
+		if (!audioRef.value) return;
+		if (option === "play") {
+			audioRef.value.play();
+		} else if (option === "pause") {
+			audioRef.value.pause();
+		}
+		isPaused.value = audioRef.value.paused;
+	});
+}
+
+onMounted(() => {
+	isPaused.value = audioRef.value.paused;
+});
+
+const userIsActive = ref(false);
+const setUserActive = () => {
+	userIsActive.value = true;
+	window.removeEventListener("click", setUserActive);
+	window.removeEventListener("keydown", setUserActive);
+	window.removeEventListener("scroll", setUserActive);
+	window.removeEventListener("touchstart", setUserActive);
+	window.removeEventListener("touchmove", setUserActive);
+	window.removeEventListener("touchend", setUserActive);
+};
+
+// 监听用户交互事件
+window.addEventListener("click", setUserActive);
+window.addEventListener("keydown", setUserActive);
+window.addEventListener("scroll", setUserActive);
+window.addEventListener("touchstart", setUserActive);
+window.addEventListener("touchmove", setUserActive);
+window.addEventListener("touchend", setUserActive);
+
+watch(userIsActive, () => {
+	togglesound("play");
+});
 </script>
 
 <style lang="scss" scoped>
@@ -685,6 +748,12 @@ const getQiniuUploadToken = async () => {};
 	right: 10px;
 	top: 10px;
 	z-index: 100;
+	.btns {
+		background: rgba(0, 0, 0, 0.5);
+		border: none;
+		color: white;
+		font-size: 20px;
+	}
 }
 
 .image-preview-modal {
@@ -750,5 +819,15 @@ const getQiniuUploadToken = async () => {};
 	color: #fff;
 	font-size: 24px;
 	cursor: pointer;
+}
+
+.pano-btns-container {
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	z-index: 100;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
 }
 </style>
