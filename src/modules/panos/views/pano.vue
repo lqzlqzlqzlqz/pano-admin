@@ -718,14 +718,16 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 		}
 
 		try {
-			await service.markers.markers.add(addMarker);
+			const addRes = await service.markers.markers.add(addMarker);
 
 			if (!markersPlugin.value) return;
 			console.log(altMarkerId.value, newMarker);
 			if (altMarkerId.value) {
 				markersPlugin.value.removeMarker(altMarkerId.value);
+				addMarker.id = addRes.id;
 				markersPlugin.value.addMarker(addMarker);
 			} else {
+				newMarker.id = addRes.id;
 				markersPlugin.value.addMarker(newMarker);
 			}
 			ElMessage.success("添加成功!");

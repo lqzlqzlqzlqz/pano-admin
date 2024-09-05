@@ -647,14 +647,16 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 		}
 
 		try {
-			await service.markers.markers.add(addMarker);
+			const addRes = await service.markers.markers.add(addMarker);
 
 			if (!markersPlugin.value) return;
-			console.log(altMarkerId.value, newMarker);
+			console.log(altMarkerId.value, newMarker, addMarker, addRes);
 			if (altMarkerId.value) {
 				markersPlugin.value.removeMarker(altMarkerId.value);
+				addMarker.id = addRes.id;
 				markersPlugin.value.addMarker(addMarker);
 			} else {
+				newMarker.id = addRes.id;
 				markersPlugin.value.addMarker(newMarker);
 			}
 			ElMessage.success("添加成功!");
@@ -710,7 +712,11 @@ function togglesound(option: string) {
 }
 
 onMounted(() => {
-	isPaused.value = audioRef.value.paused;
+	nextTick(() => {
+		setTimeout(() => {
+			isPaused.value = audioRef.value.paused;
+		}, 300);
+	});
 });
 
 const userIsActive = ref(false);
