@@ -38,13 +38,13 @@ const { service } = useCool();
 const Upsert = useUpsert({
 	items: [
 		{
-			label: "name",
+			label: "名称",
 			prop: "name",
 			component: { name: "el-input", props: { clearable: true } },
 			required: true
 		},
 		{
-			label: "path",
+			label: "图片",
 			prop: "path",
 			component: { name: "cl-upload" },
 			required: true
