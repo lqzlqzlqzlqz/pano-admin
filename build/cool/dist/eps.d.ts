@@ -486,6 +486,10 @@ declare namespace Eps {
 		 */
 		polygon?: json;
 		/**
+		 * 箭头id
+		 */
+		arrowId?: number;
+		/**
 		 * 创建时间
 		 */
 		createTime?: Date;

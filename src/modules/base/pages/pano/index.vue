@@ -198,7 +198,10 @@ const initPano = async () => {
 						currentMarkers.value = res.markersList.map((v) => ({
 							id: v.id,
 							[v.pt]: v[v.pt],
-							html: v.html,
+							html:
+								v.mt === "arrow"
+									? `<img src='${v.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`
+									: null,
 							anchor: "bottom center",
 							svgStyle: v.svgStyle,
 							size: { width: 50, height: 50 },

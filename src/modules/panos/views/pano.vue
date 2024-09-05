@@ -2,7 +2,21 @@
 	<div class="pano-btns-container">
 		<el-button @click="changeIsAddMarker">{{ isAddMarker ? "完成" : "设置/添加" }}</el-button>
 		<div>
-			<cl-upload type="file" text="设置背景音乐" v-model="musicUrl" />
+			<cl-upload
+				type="file"
+				text="设置背景音乐"
+				v-model="musicUrl"
+				:onSuccess="
+					() => {
+						console.log('success');
+					}
+				"
+				:remove="
+					() => {
+						console.log('success');
+					}
+				"
+			/>
 		</div>
 	</div>
 	<el-image
@@ -89,7 +103,7 @@
 							<span style="float: left">{{ item.label }}</span>
 							<img
 								style="float: right; width: 50px; height: 50px; object-fit: contain"
-								:src="item.value"
+								:src="item.path"
 							/>
 						</el-option>
 					</el-select>
@@ -225,7 +239,8 @@ const initPano = async () => {
 			service.arrows.base.list().then((res) => {
 				panosArrowsOps.value = res.map((v) => ({
 					label: v.name,
-					value: v.path,
+					value: v.id,
+					path: v.path,
 					key: v.id
 				}));
 			})
@@ -237,14 +252,19 @@ const initPano = async () => {
 					currentMarkers.value = res.map((v) => ({
 						id: v.id,
 						[v.pt]: v[v.pt],
-						html: v.html,
+						html:
+							v.mt === "arrow"
+								? `<img src='${v.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`
+								: null,
 						anchor: "bottom center",
 						svgStyle: v.svgStyle,
 						size: { width: 50, height: 50 },
 						tooltip: v.tooltip,
 						navigate: v.navigate,
 						mt: v.mt,
-						pop: v.pop
+						pop: v.pop,
+						arrowId: v.arrowId,
+						a_path: v.path
 					}));
 				}
 			})
@@ -352,35 +372,24 @@ function initViewer() {
 				addMarkerFormData.value.tooltip = selectedMarker.value.tooltip.content;
 				addMarkerFormData.value.to = selectedMarker.value.navigate;
 				addMarkerFormData.value.pop = selectedMarker.value.pop;
+				addMarkerFormData.value.path = selectedMarker.value.arrowId;
+				console.log(selectedMarker.value);
 				const imgStr = selectedMarker.value.html;
-				const match = imgStr?.match(regex);
-				if (match && match[1]) {
-					addMarkerFormData.value.path = match[1];
-				}
+				// const match = imgStr?.match(regex);
+				// if (match && match[1]) {
+				// 	addMarkerFormData.value.path = match[1];
+				// }
 
 				isAddMarkerFormOpen.value = true;
 			} else {
 				if (e.marker.config.mt === "arrow") {
-					// panoId.value = e.marker.config.navigate;
-					// clearMarker();
 					router.push(
 						`/panos/view?pano_id=${e.marker.config.navigate}&project_id=${projectId.value}`
 					);
-					// await initPano();
-					// viewer.value.setPanorama(panoramaUrl.value).then((res) => {
-					// 	handleViewerReady();
-					// });
 				} else if (e.marker.config.mt === "graph") {
 					imageList.value = e.marker.config.pop;
 					previewOpenConfig.value.list = imageList.value;
 					previewOpenConfig.value.visible = true;
-					// if (imageList.value?.length && imageList.value[0]?.includes(".mp4")) {
-					// 	isVideoPreviewOpen.value = true;
-					// } else {
-					// 	nextTick(() => {
-					// 		document.querySelector("#preview_img_list")?.click();
-					// 	});
-					// }
 				}
 			}
 		}
@@ -635,7 +644,13 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 		selectedMarker.value.pop = addMarkerFormData.value.pop;
 		selectedMarker.value.tooltip.content = addMarkerFormData.value.tooltip;
 		if (selectedMarker.value.mt === "arrow") {
-			selectedMarker.value.html = `<img src='${addMarkerFormData.value.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`;
+			const findPath = panosArrowsOps.value.find(
+				(v) => v.key === addMarkerFormData.value.path
+			);
+			if (findPath && findPath.path) {
+				selectedMarker.value.html = `<img src='${findPath.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`;
+			}
+			selectedMarker.value.arrowId = addMarkerFormData.value.path;
 		}
 		try {
 			await service.markers.markers.update(selectedMarker.value);
@@ -691,10 +706,13 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 				isAdding: false
 			};
 		} else {
+			const findPath = panosArrowsOps.value.find(
+				(v) => v.key === addMarkerFormData.value.path
+			);
 			newMarker = {
 				id: `marker_${Date.now()}`,
 				position: addPosition.value,
-				html: `<img src='${addMarkerFormData.value.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
+				html: `<img src='${findPath?.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
 				anchor: "bottom center",
 				size: { width: 50, height: 50 },
 				tooltip: {
@@ -703,7 +721,8 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 					trigger: "hover"
 				},
 				navigate: addMarkerFormData.value.to,
-				mt: "arrow"
+				mt: "arrow",
+				arrowId: addMarkerFormData.value.path
 			};
 			addMarker = {
 				panoId: panoId.value,
@@ -713,7 +732,8 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 				visible: true,
 				navigate: newMarker.navigate,
 				position: newMarker.position,
-				html: newMarker.html
+				html: newMarker.html,
+				arrowId: addMarkerFormData.value.path
 			};
 		}
 
@@ -775,17 +795,17 @@ const updateMusic = async () => {
 			id: Number(panoId.value),
 			music: musicUrl.value
 		});
-		ElMessage.success("音频更换成功！");
+		// ElMessage.success("音频更换成功！");
 	} catch (e) {
 		ElMessage.error("音频更换失败，请重试！");
 		musicUrl.value = "";
 	}
 };
 watch(musicUrl, () => {
-	if (isMusic.value) {
-		isMusic.value = false;
-		return;
-	}
+	// if (isMusic.value) {
+	// 	isMusic.value = false;
+	// 	return;
+	// }
 	updateMusic();
 });
 </script>
