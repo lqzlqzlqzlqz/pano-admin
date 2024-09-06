@@ -254,7 +254,9 @@ const initPano = async () => {
 						[v.pt]: v[v.pt],
 						html:
 							v.mt === "arrow"
-								? `<img src='${v.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`
+								? `<div style="width: 50px; height: 50px; overflow: hidden; position: relative;">
+        <img src='${v.path}' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);' />
+    </div>`
 								: null,
 						anchor: "bottom center",
 						svgStyle: v.svgStyle,
@@ -648,7 +650,9 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 				(v) => v.key === addMarkerFormData.value.path
 			);
 			if (findPath && findPath.path) {
-				selectedMarker.value.html = `<img src='${findPath.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`;
+				selectedMarker.value.html = `<div style="width: 50px; height: 50px; overflow: hidden; position: relative;">
+        <img src='${findPath.path}' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);' />
+    </div>`;
 			}
 			selectedMarker.value.arrowId = addMarkerFormData.value.path;
 		}
@@ -712,7 +716,9 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 			newMarker = {
 				id: `marker_${Date.now()}`,
 				position: addPosition.value,
-				html: `<img src='${findPath?.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
+				html: `<div style="width: 50px; height: 50px; overflow: hidden; position: relative;">
+        <img src='${findPath.path}' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);' />
+    </div>`,
 				anchor: "bottom center",
 				size: { width: 50, height: 50 },
 				tooltip: {

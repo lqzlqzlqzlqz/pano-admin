@@ -200,7 +200,9 @@ const initPano = async () => {
 							[v.pt]: v[v.pt],
 							html:
 								v.mt === "arrow"
-									? `<img src='${v.path}' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`
+									? `<div style="width: 50px; height: 50px; overflow: hidden; position: relative;">
+        <img src='${v.path}' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);' />
+    </div>`
 									: null,
 							anchor: "bottom center",
 							svgStyle: v.svgStyle,
@@ -626,7 +628,9 @@ const handleAddMarkerFormSubmit = async (formEl: FormInstance | undefined) => {
 			newMarker = {
 				id: `marker_${Date.now()}`,
 				position: addPosition.value,
-				html: `<img src='http://qiniu-misc.hua10.com/1718070179654-dc4f0356995041418a2e582ac483f8af_arrow1.gif' style='width: 50px; height: 50px; transform: rotate(0deg);'/>`,
+				html: `<div style="width: 50px; height: 50px; overflow: hidden; position: relative;">
+        <img src='${v.path}' style='width: 100%; height: 100%; object-fit: contain; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);' />
+    </div>`,
 				anchor: "bottom center",
 				size: { width: 50, height: 50 },
 				tooltip: {
