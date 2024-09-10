@@ -10,6 +10,32 @@
 			size="large"
 		/>
 	</div>
+	<div
+		class="map-container"
+		:style="{ right: isMapView ? '10px' : '-300px', overflow: 'hidden' }"
+	>
+		<img class="map-bg" :src="map" alt="map" />
+		<el-tooltip v-for="v in panosList" :key="v.id" :content="v.title" placement="top">
+			<div
+				class="map-point"
+				:style="{
+					width: mapDotWidth + 'px',
+					height: mapDotWidth + 'px',
+					top: `calc(${v.position?.top}% - ${mapDotWidth / 2}px)`,
+					left: `calc(${v.position?.left}% - ${mapDotWidth / 2}px)`,
+					background: panoId == v.id ? 'red' : 'rgb(0, 115, 255)'
+				}"
+				@click="goToScene(v)"
+			></div>
+		</el-tooltip>
+		<VisualAngle
+			:top="`calc(${getCurrentDotPosition?.top}%)`"
+			:left="`calc(${getCurrentDotPosition?.left}%)`"
+			:angle="angle"
+			:setAngle="setAngle"
+			:setIsSetAngle="setIsSetAngle"
+		/>
+	</div>
 	<el-image
 		id="preview_img_list"
 		style="width: 100px; height: 100px; position: absolute; left: -10000px"
@@ -87,7 +113,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onUnmounted, watch, nextTick, computed } from "vue";
+import { ref, onMounted, onUnmounted, watch, nextTick, computed, onBeforeUnmount } from "vue";
 import { Viewer } from "@photo-sphere-viewer/core";
 import { MarkersPlugin } from "@photo-sphere-viewer/markers-plugin";
 import { GalleryPlugin } from "@photo-sphere-viewer/gallery-plugin";
@@ -99,10 +125,10 @@ import arrow from "../static/icon/arrow.gif";
 import { useCool } from "/@/cool";
 import { ElMessage, ElNotification } from "element-plus";
 import PictureGallery from "/@/modules/panos/components/pictureGallery.vue";
-import { gridHTML } from "/@/modules/panos/const/const";
+import { gridHTML, mapHTML } from "/@/modules/panos/const/const";
 import MediaViewer from "/@/modules/panos/components/mediaViewer.vue";
 import { VideoPlay, VideoPause } from "@element-plus/icons-vue";
-
+import VisualAngle from "./components/visualangle.vue";
 const { service, route, router } = useCool();
 
 const props = defineProps({
@@ -140,6 +166,12 @@ const panosNavigateOps = ref([]);
 const isImagePreviewOpen = ref(false);
 const imageList = ref<string[]>([]);
 
+const mapDotWidth = 12;
+const isMapView = ref(true);
+const map = ref("");
+const panoRoutes = ref([]);
+const panoViews = ref({});
+
 // 初始 获取pano_id，panoInfo，
 onMounted(async () => {
 	if (route.query?.pano_id) {
@@ -172,6 +204,9 @@ const isGalleryOpen = ref(true);
 const changeIsGalleryOpen = () => {
 	isGalleryOpen.value = !isGalleryOpen.value;
 };
+const mapOpen = () => {
+	isMapView.value = !isMapView.value;
+};
 const musicUrl = ref("");
 const initPano = async () => {
 	try {
@@ -188,6 +223,7 @@ const initPano = async () => {
 					if (!res.panoDetail) router.push("/404");
 					panoInfo.value = res.panoDetail;
 					musicUrl.value = panoInfo.value?.music;
+					map.value = res?.projectDetail?.mapSrc;
 					console.log(musicUrl.value);
 					panosNavigateOps.value = res.panosList.map((v) => ({
 						label: v.title,
@@ -234,6 +270,15 @@ watch(
 	}
 );
 
+const angle = ref(0);
+const isSetAngle = ref(false);
+const setIsSetAngle = (b: boolean) => {
+	isSetAngle.value = b;
+};
+
+const setAngle = (a: number) => {
+	angle.value = a;
+};
 // 点击标记显示marker弹窗
 const selectedMarker = ref({});
 
@@ -251,7 +296,7 @@ function initViewer() {
 		container: "viewer",
 		panorama: panoramaUrl.value || defaultUrl,
 		caption: panoInfo.value?.title ?? "",
-		touchmoveTwoFingers: true,
+		touchmoveTwoFingers: false,
 		mousewheelCtrlKey: false,
 		lang: {
 			zoom: "缩放",
@@ -267,19 +312,19 @@ function initViewer() {
 			"autorotate",
 			"zoom",
 			"markers",
-			"move",
+
 			"gallery",
+			{
+				title: "地图",
+				content: mapHTML,
+				onClick: mapOpen
+			},
 			,
 			{
 				title: "场景列表",
 				content: gridHTML,
 				onClick: changeIsGalleryOpen
 			},
-			// {
-			// 	title: "Change points",
-			// 	content: "🔄",
-			// 	onClick: randomPoints
-			// },
 			"caption",
 			"fullscreen"
 		],
@@ -341,7 +386,61 @@ function initViewer() {
 	});
 	viewer.value.addEventListener("ready", handleViewerReady);
 	viewer.value.addEventListener("click", handleClick);
+
+	viewer.value.addEventListener("viewchange", () => {
+		console.log(11111);
+	});
 }
+
+const radiansToDegrees = (radians: number) => {
+	return radians * (180 / Math.PI);
+};
+
+const degreesToRadians = (degrees: number) => {
+	return degrees * (Math.PI / 180);
+};
+
+let lastUpdateTime = 0; // 记录上次更新的时间
+const updateInterval = 10; // 更新间隔，单位为毫秒
+const animationFrameId = ref();
+
+const updateAngle = (timestamp) => {
+	if (viewer.value) {
+		if (timestamp - lastUpdateTime >= updateInterval) {
+			const degrees = viewer.value.getPosition();
+			const newAngle = radiansToDegrees(degrees.yaw);
+			// 只有当角度变化足够大时才更新
+			if (Math.abs(angle.value - newAngle) > 0.5) {
+				angle.value = newAngle;
+			}
+			lastUpdateTime = timestamp; // 更新上次更新时间
+		}
+	}
+
+	animationFrameId.value = requestAnimationFrame(updateAngle);
+};
+
+onMounted(() => {
+	// 启动动画更新
+	animationFrameId.value = requestAnimationFrame(updateAngle);
+});
+
+watch(
+	[angle, isSetAngle],
+	() => {
+		if (viewer.value && isSetAngle.value) {
+			viewer.value.animate({
+				yaw: degreesToRadians(angle.value),
+				pitch: viewer.value.getPosition()?.pitch ?? 0
+			});
+		}
+	},
+	{ immediate: true }
+); // 立即执行一次
+
+onBeforeUnmount(() => {
+	cancelAnimationFrame(animationFrameId.value);
+});
 
 const closeImagePreview = () => {
 	isImagePreviewOpen.value = false;
@@ -351,7 +450,7 @@ function handleViewerReady() {
 	console.log("READY");
 	markersPlugin.value.setMarkers(currentMarkers.value);
 	markersPlugin.value.showAllTooltips();
-	// showInitMarker();
+	showInitMarker();
 }
 
 function showInitMarker() {
@@ -362,7 +461,7 @@ function showInitMarker() {
 			speed: 100
 		})
 		.then(() => {
-			markersPlugin.value.showMarkerTooltip("new-marker1");
+			// markersPlugin.value.showMarkerTooltip("new-marker1");
 			autorotatePlugin.value.start();
 		});
 }
@@ -748,6 +847,21 @@ window.addEventListener("touchend", setUserActive);
 watch(userIsActive, () => {
 	togglesound("play");
 });
+
+const goToScene = (v: any) => {
+	router.push(`/pano?pano_id=${v.id}&project_id=${projectId.value}`);
+};
+
+const getCurrentDotPosition = computed(() => {
+	const item: any = panosList.value.find((v: any) => v.id == panoId.value);
+	if (item) {
+		return item.position;
+	}
+	return {
+		left: -100000,
+		top: -100000
+	};
+});
 </script>
 
 <style lang="scss" scoped>
@@ -842,5 +956,28 @@ watch(userIsActive, () => {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
+}
+
+.map-container {
+	position: fixed;
+	top: 60px;
+	right: 60px;
+	max-width: 300px;
+	max-height: 300px;
+	// height: 400px;
+	z-index: 100; /* 确保地图在其他元素之上 */
+	transition: all 0.3s;
+	.map-bg {
+		width: 100%;
+	}
+	.map-point {
+		position: absolute;
+		// width: 15px; /* 调整以适应你的需求 */
+		// height: 15px; /* 调整以适应你的需求 */
+		background-color: rgb(0, 115, 255);
+		border-radius: 50%;
+		cursor: pointer;
+		z-index: 650;
+	}
 }
 </style>
