@@ -456,8 +456,8 @@ function handleViewerReady() {
 function showInitMarker() {
 	viewer.value
 		.animate({
-			yaw: "-27deg",
-			pitch: "-6deg",
+			yaw: "-90deg",
+			pitch: "-0deg",
 			speed: 100
 		})
 		.then(() => {
@@ -964,16 +964,19 @@ const getCurrentDotPosition = computed(() => {
 	right: 60px;
 	max-width: 300px;
 	max-height: 300px;
-	// height: 400px;
+	width: 100%; /* 确保容器宽度为100% */
+	height: 100%; /* 确保容器高度为100% */
 	z-index: 100; /* 确保地图在其他元素之上 */
 	transition: all 0.3s;
+
 	.map-bg {
 		width: 100%;
+		height: 100%;
+		object-fit: contain; /* 确保图片显示全且不变形 */
 	}
+
 	.map-point {
 		position: absolute;
-		// width: 15px; /* 调整以适应你的需求 */
-		// height: 15px; /* 调整以适应你的需求 */
 		background-color: rgb(0, 115, 255);
 		border-radius: 50%;
 		cursor: pointer;
