@@ -962,7 +962,7 @@ const getCurrentDotPosition = computed(() => {
 	position: fixed;
 	top: 60px;
 	right: 60px;
-	max-width: 460px; /* 设置最大宽度为300px */
+	max-width: 300px; /* 设置最大宽度为300px */
 	width: auto; /* 容器宽度根据内容自动调整 */
 	height: auto; /* 容器高度根据内容自动调整 */
 	z-index: 100; /* 确保地图在其他元素之上 */
