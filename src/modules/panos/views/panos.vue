@@ -72,8 +72,8 @@
 						width: dottedSize + 'px',
 						height: dottedSize + 'px',
 						position: 'absolute',
-						left: temporaryPosition?.left + '%',
-						top: temporaryPosition?.top + '%',
+						left: `calc(${temporaryPosition?.left}% - ${dottedSize / 2}px)`,
+						top: `calc(${temporaryPosition?.top}% - ${dottedSize / 2}px)`,
 						zIndex: 180,
 						background: 'blue',
 						borderRadius: '50%'
@@ -105,8 +105,12 @@
 						width: dottedSize + 'px',
 						height: dottedSize + 'px',
 						position: 'absolute',
-						left: viewPositionDialog.currentPosition?.left + '%',
-						top: viewPositionDialog.currentPosition?.top + '%',
+						left: `calc(${viewPositionDialog.currentPosition?.left}% - ${
+							dottedSize / 2
+						}px)`,
+						top: `calc(${viewPositionDialog.currentPosition?.top}% - ${
+							dottedSize / 2
+						}px)`,
 						zIndex: 180,
 						background: 'blue',
 						borderRadius: '50%'
@@ -142,12 +146,12 @@ const changePosition = (scope: any) => {
 const dottedSize = 10;
 const isChangePositionDialogOpen = ref(false);
 const temporaryPosition = ref<any>(null);
-const addPositionNode = (e: any) => {
-	const parentWidth = e.currentTarget.offsetWidth;
-	const parentHeight = e.currentTarget.offsetHeight;
+const addPositionNode = (e: MouseEvent) => {
+	const target = e.currentTarget as HTMLElement;
+	const rect = target.getBoundingClientRect();
 	const position = {
-		left: (e.offsetX / parentWidth) * 100,
-		top: (e.offsetY / parentHeight) * 100
+		left: ((e.clientX - rect.left) / rect.width) * 100,
+		top: ((e.clientY - rect.top) / rect.height) * 100
 	};
 	temporaryPosition.value = position;
 };

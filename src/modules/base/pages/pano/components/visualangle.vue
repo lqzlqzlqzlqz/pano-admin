@@ -49,7 +49,7 @@ export default defineComponent({
 	computed: {
 		imgStyle() {
 			return {
-				transform: `translate(-50%, -100%) rotate(${this.angle + 90}deg)`,
+				transform: `translate(-50%, -100%) rotate(${this.angle - 150}deg)`,
 				transformOrigin: "bottom center",
 				filter: "invert(1)",
 				position: "absolute",

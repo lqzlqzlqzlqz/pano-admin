@@ -166,7 +166,7 @@ const panosNavigateOps = ref([]);
 const isImagePreviewOpen = ref(false);
 const imageList = ref<string[]>([]);
 
-const mapDotWidth = 12;
+const mapDotWidth = 10;
 const isMapView = ref(true);
 const map = ref("");
 const panoRoutes = ref([]);
@@ -962,17 +962,17 @@ const getCurrentDotPosition = computed(() => {
 	position: fixed;
 	top: 60px;
 	right: 60px;
-	max-width: 300px;
-	max-height: 300px;
-	width: 100%; /* 确保容器宽度为100% */
-	height: 100%; /* 确保容器高度为100% */
+	max-width: 460px; /* 设置最大宽度为300px */
+	width: auto; /* 容器宽度根据内容自动调整 */
+	height: auto; /* 容器高度根据内容自动调整 */
 	z-index: 100; /* 确保地图在其他元素之上 */
 	transition: all 0.3s;
 
 	.map-bg {
 		width: 100%;
-		height: 100%;
+		height: auto; /* 高度自动调整以保持比例 */
 		object-fit: contain; /* 确保图片显示全且不变形 */
+		display: block;
 	}
 
 	.map-point {
